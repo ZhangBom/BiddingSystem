@@ -9,4 +9,6 @@ public interface UserService {
     Result logout();
 
     Result register(User user);
+
+    Result userinfo(String token);
 }

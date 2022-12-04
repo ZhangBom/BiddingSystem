@@ -1,32 +1,33 @@
 package com.zhangbo.config;
 
+import com.zhangbo.config.FastJsonRedisSerializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
-/*
-* Redis的配置类
-* */
 @Configuration
 public class RedisConfig {
+
     @Bean
-    public RedisTemplate<String,Object> redisTemplate(RedisConnectionFactory connectionFactory){
-        RedisTemplate<String ,Object> redisTemplate = new RedisTemplate<>();
+    @SuppressWarnings(value = { "unchecked", "rawtypes" })
+    public RedisTemplate<Object, Object> redisTemplate(RedisConnectionFactory connectionFactory)
+    {
+        RedisTemplate<Object, Object> template = new RedisTemplate<>();
+        template.setConnectionFactory(connectionFactory);
 
-        //String类型序列器
-        redisTemplate.setKeySerializer(new StringRedisSerializer());
-        //Strig 类型value序列器
-        redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
-        //hash类型，key序列器
-        redisTemplate.setHashKeySerializer(new StringRedisSerializer());
-        //Hash 类型value序列器
-        redisTemplate.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
-        redisTemplate.setConnectionFactory(connectionFactory);
+        FastJsonRedisSerializer serializer = new FastJsonRedisSerializer(Object.class);
 
-        return  redisTemplate;
+        // 使用StringRedisSerializer来序列化和反序列化redis的key值
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setValueSerializer(serializer);
+
+        // Hash的key也采用StringRedisSerializer的序列化方式
+        template.setHashKeySerializer(new StringRedisSerializer());
+        template.setHashValueSerializer(serializer);
+
+        template.afterPropertiesSet();
+        return template;
     }
-
 }

@@ -1,5 +1,4 @@
 package com.zhangbo.until;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
@@ -7,7 +6,6 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import javax.security.auth.Subject;
 import java.util.Base64;
 import java.util.Date;
 import java.util.UUID;
@@ -20,7 +18,7 @@ public class JwtUtil {
     //有效期为
     public static final Long JWT_TTL = 60 * 60 *1000L;// 60 * 60 *1000  一个小时
     //设置秘钥明文
-    public static final String JWT_KEY = "zhangbo";
+    public static final String JWT_KEY = "sangeng";
 
     public static String getUUID(){
         String token = UUID.randomUUID().toString().replaceAll("-", "");
@@ -36,6 +34,7 @@ public class JwtUtil {
         JwtBuilder builder = getJwtBuilder(subject, null, getUUID());// 设置过期时间
         return builder.compact();
     }
+
     /**
      * 生成jtw
      * @param subject token中要存放的数据（json格式）
@@ -46,6 +45,7 @@ public class JwtUtil {
         JwtBuilder builder = getJwtBuilder(subject, ttlMillis, getUUID());// 设置过期时间
         return builder.compact();
     }
+
     private static JwtBuilder getJwtBuilder(String subject, Long ttlMillis, String uuid) {
         SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
         SecretKey secretKey = generalKey();
@@ -59,7 +59,7 @@ public class JwtUtil {
         return Jwts.builder()
                 .setId(uuid)              //唯一的ID
                 .setSubject(subject)   // 主题  可以是JSON数据
-                .setIssuer("zhangbo")     // 签发者
+                .setIssuer("sg")     // 签发者
                 .setIssuedAt(now)      // 签发时间
                 .signWith(signatureAlgorithm, secretKey) //使用HS256对称加密算法签名, 第二个参数为秘钥
                 .setExpiration(expDate);
@@ -78,11 +78,9 @@ public class JwtUtil {
     }
 
     public static void main(String[] args) throws Exception {
-        String token = "eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIzODAyZTM1MzQ0M2E0MWRhYWEzNDRlYzNmMTI2ZTRlYyIsInN1YiI6IjEiLCJpc3MiOiJzZyIsImlhdCI6MTY2MDAzNzMxMSwiZXhwIjoxNjYwMDQwOTExfQ.QPWRgcmiAn12Si7yjkVq3DE9bpvBcNYabUtqwpuSXSI";
+        String token = "eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJjYWM2ZDVhZi1mNjVlLTQ0MDAtYjcxMi0zYWEwOGIyOTIwYjQiLCJzdWIiOiJzZyIsImlzcyI6InNnIiwiaWF0IjoxNjM4MTA2NzEyLCJleHAiOjE2MzgxMTAzMTJ9.JVsSbkP94wuczb4QryQbAke3ysBDIL5ou8fWsbt_ebg";
         Claims claims = parseJWT(token);
         System.out.println(claims);
-        String subject = claims.getSubject();
-        System.out.println(subject);
     }
 
     /**
@@ -112,4 +110,3 @@ public class JwtUtil {
 
 
 }
-

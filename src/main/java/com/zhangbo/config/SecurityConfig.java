@@ -42,6 +42,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // 对于登录接口 允许匿名访问
                 .antMatchers("/user/login").anonymous()
                 .antMatchers("/user/register").anonymous()
+                .antMatchers("/user/info").anonymous()
                 // 除上面外的所有请求全部需要鉴权认证
                 .anyRequest().authenticated();
         //自定义登录过滤器
@@ -51,7 +52,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         //开启跨域
         http.cors();
     }
-
     @Bean
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {

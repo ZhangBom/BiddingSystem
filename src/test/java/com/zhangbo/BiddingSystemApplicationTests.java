@@ -13,7 +13,7 @@ class BiddingSystemApplicationTests {
     private MenuMapper menuMapper;
     @Test
     void text() {
-      List<String> list= menuMapper.selectPermsByUserId("1");
+      List<String> list= menuMapper.selectPermsByUserId("1586321551848955905");
         System.out.println(list);
     }
 

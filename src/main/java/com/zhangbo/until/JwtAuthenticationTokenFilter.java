@@ -14,6 +14,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Map;
 import java.util.Objects;
 
 @Component
@@ -23,7 +24,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     private RedisCache redisCache;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException, ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws  ServletException, IOException {
         //获取token
         String token = request.getHeader("token");
         if (!StringUtils.hasText(token)) {
@@ -42,9 +43,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         }
         //从redis中获取用户信息
         String redisKey = "user:" + userid;
-//        Map<LoginUser,Object> loginUser=redisCache.getCacheObject(redisKey);
         LoginUser loginUser=redisCache.getCacheObject(redisKey);
-//        System.out.println(loginUser);
         if(Objects.isNull(loginUser)){
             throw new RuntimeException("用户未登录");
         }

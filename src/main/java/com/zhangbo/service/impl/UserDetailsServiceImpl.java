@@ -12,6 +12,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -25,8 +26,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         User user = userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getUserName, username)
                 .or().eq(User::getUserEmail,username)
                 .or().eq(User::getUserPhone, username));
-        if (user == null) {
-            throw new UsernameNotFoundException("用户不存在");
+        if (Objects.isNull(user)) {
+            throw new UsernameNotFoundException("用户名或密码错误");
         }
         //将用户权限信息封装到UserDetails中
         List<String> list=menuMapper.selectPermsByUserId(user.getUserId());

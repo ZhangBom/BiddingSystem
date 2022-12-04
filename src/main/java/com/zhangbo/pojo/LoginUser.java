@@ -1,6 +1,7 @@
 package com.zhangbo.pojo;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -12,12 +13,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @NoArgsConstructor
+@AllArgsConstructor
 @Data
 public class LoginUser implements UserDetails, Serializable {
     private User user;
 
     private List<String> permission;
-    @JSONField(serialize = false)
+//    @JSONField(serialize = true)
     private List<SimpleGrantedAuthority> authorities;
 
     @Override
@@ -25,11 +27,6 @@ public class LoginUser implements UserDetails, Serializable {
         if (authorities != null) {
             return authorities;
         }
-//        authorities=new ArrayList<>();
-//        for (String permission : permission) {
-//            SimpleGrantedAuthority authority=new SimpleGrantedAuthority(permission);
-//            authorities.add(authority);
-//        }
         authorities = permission.stream()
                 .map(SimpleGrantedAuthority::new).collect(Collectors.toList());
         return authorities;
