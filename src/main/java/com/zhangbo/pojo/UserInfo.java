@@ -13,7 +13,7 @@ import java.util.List;
 @ToString
 public class UserInfo {
     String name;
-    String avater;
+    String avatar;
     List roles;
     String introduction;
 }

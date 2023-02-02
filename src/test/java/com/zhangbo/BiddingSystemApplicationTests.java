@@ -1,6 +1,7 @@
 package com.zhangbo;
 
 import com.zhangbo.mapper.MenuMapper;
+import com.zhangbo.until.HumpUntil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,10 +12,11 @@ import java.util.List;
 class BiddingSystemApplicationTests {
     @Autowired
     private MenuMapper menuMapper;
+
     @Test
     void text() {
-      List<String> list= menuMapper.selectPermsByUserId("1586321551848955905");
-        System.out.println(list);
+        HumpUntil humpUntil=new HumpUntil();
+        System.out.println(humpUntil.hump_underline("purchaseName"));
     }
 
 }

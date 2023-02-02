@@ -3,6 +3,7 @@ package com.zhangbo.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zhangbo.pojo.LoginUser;
+import com.zhangbo.pojo.TableVendor;
 import com.zhangbo.pojo.User;
 import com.zhangbo.pojo.UserInfo;
 import com.zhangbo.service.UserService;
@@ -48,7 +49,7 @@ public class UserServiceImpl  extends ServiceImpl<UserMapper, User> implements U
         String jwt = JwtUtil.createJWT(userId);
         //authenticate存入redis
         String redisKey = "user:" + userId;
-        redisCache.setCacheObject(redisKey, loginUser, 60 * 60, TimeUnit.SECONDS);
+        redisCache.setCacheObject(redisKey, loginUser, 60 * 60* 24, TimeUnit.SECONDS);
         //把token响应给前端
         HashMap<String, String> map = new HashMap<>();
         map.put("token", jwt);
@@ -77,12 +78,13 @@ public class UserServiceImpl  extends ServiceImpl<UserMapper, User> implements U
      */
     @Override
     public Result register(User user) {
+        TableVendor tableVendor = new TableVendor();
         if (check_name(user)) {//检查用户名是否已经注册
             if (check_phone(user)) {//检查电话是否已经注册
                 if (check_email(user)) {//检查邮箱是否已经注册
                     user.setUserPassword(passwordEncoder.encode(user.getUserPassword()));//密码加密
-                    //设置用户状态为正常
-                    user.setUserStatus("0");
+                    //设置用户状态为待审核
+                    user.setUserStatus("待审核");
                     save(user);
                     return Result.resultFactory(Status.REGISTER_SUCCESS, user);
                 } else {
@@ -112,9 +114,10 @@ public class UserServiceImpl  extends ServiceImpl<UserMapper, User> implements U
         if(Objects.isNull(loginUser)){
             return Result.resultFactory(Status.STATUS_ERROR);
         }
+        //封装用户信息，不会把用户所有信息返回前端。
         UserInfo userInfo = new UserInfo();
         userInfo.setName(loginUser.getUsername());
-        userInfo.setAvater(loginUser.getUser().getUserType());
+        userInfo.setAvatar(loginUser.getUser().getUserImage());
         userInfo.setRoles(loginUser.getPermission());
         userInfo.setIntroduction("介绍");
         return Result.resultFactory(Status.STATUS,userInfo);

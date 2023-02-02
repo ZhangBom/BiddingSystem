@@ -21,17 +21,20 @@ public class UserController {
     public Result login(@RequestBody User user) {
         return userService.login(user);
     }
+
     @RequestMapping("logout")
     public Result logout() {
         return userService.logout();
     }
-//    @PreAuthorize("hasAuthority('system:home:list')")
+
+//    @PreAuthorize("hasAuthority('admin')")
     @GetMapping("info")
-    public Result hello(@RequestParam(value="token",required = true) String token){
+    public Result hello(@RequestParam(value = "token", required = true) String token) {
         return userService.userinfo(token);
     }
+
     @PostMapping("register")
-    public Result register(@RequestBody User user){
+    public Result register(@RequestBody User user) {
         return userService.register(user);
     }
 }
