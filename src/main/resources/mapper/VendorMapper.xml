@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhangbo.mapper.VendorMapper">
-    <!--    <select id="Login" resultType="user">-->
-    <!--        select * from user where username= #{username} and password=#{password}-->
-    <!--    </select>-->
+<!--        <select id="find_vendorLevel" resultType="list">-->
+<!--            select vendor_level from tab_vendor group by vendor_level-->
+<!--        </select>-->
 </mapper>

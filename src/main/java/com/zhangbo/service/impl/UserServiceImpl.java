@@ -3,7 +3,7 @@ package com.zhangbo.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zhangbo.pojo.LoginUser;
-import com.zhangbo.pojo.TableVendor;
+import com.zhangbo.pojo.TabVendor;
 import com.zhangbo.pojo.User;
 import com.zhangbo.pojo.UserInfo;
 import com.zhangbo.service.UserService;
@@ -78,7 +78,7 @@ public class UserServiceImpl  extends ServiceImpl<UserMapper, User> implements U
      */
     @Override
     public Result register(User user) {
-        TableVendor tableVendor = new TableVendor();
+        TabVendor tabVendor = new TabVendor();
         if (check_name(user)) {//检查用户名是否已经注册
             if (check_phone(user)) {//检查电话是否已经注册
                 if (check_email(user)) {//检查邮箱是否已经注册
