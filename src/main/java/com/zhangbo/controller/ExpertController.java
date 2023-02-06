@@ -1,5 +1,7 @@
 package com.zhangbo.controller;
 
+import com.zhangbo.pojo.TabExpert;
+import com.zhangbo.pojo.TabVendor;
 import com.zhangbo.service.ExpertService;
 import com.zhangbo.until.PageQuery;
 import com.zhangbo.until.Result;
@@ -15,7 +17,11 @@ public class ExpertController {
     private ExpertService expertService;
 
     @PostMapping("findAll")
-    public Result findAll_export(PageQuery pageQuery){
+    public Result findAll_export(@RequestBody PageQuery pageQuery){
         return expertService.findAll(pageQuery);
+    }
+    @PutMapping("expert_update")
+    public Result expert_update(@RequestBody TabExpert expert) {
+        return expertService.expert_update(expert);
     }
 }

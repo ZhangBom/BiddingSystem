@@ -39,4 +39,10 @@ public class ExpertServiceImpl extends ServiceImpl<ExpertMapper, TabExpert> impl
         //封装返回格式
         return Result.resultFactory(Status.SUCCESS, tabExpertBackPage);
     }
+
+    @Override
+    public Result expert_update(TabExpert expert) {
+        updateById(expert);
+        return Result.resultFactory(Status.DELETE_INFO_SUCCESS);
+    }
 }

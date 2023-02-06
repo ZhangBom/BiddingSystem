@@ -52,7 +52,6 @@ public class VendorController {
      */
     @PutMapping("vendor_update")
     public Result vendor_update(@RequestBody TabVendor vendor) {
-        System.out.println(vendor);
         return vendorService.vendor_update(vendor);
     }
 }
