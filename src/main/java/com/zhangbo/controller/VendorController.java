@@ -23,7 +23,6 @@ public class VendorController {
      */
     @PostMapping("findAll")
     public Result vendor_findAll(@RequestBody PageQuery pageQuery) {
-        System.out.println(pageQuery);
         return vendorService.findAll(pageQuery);
     }
 
