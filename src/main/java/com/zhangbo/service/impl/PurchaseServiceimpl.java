@@ -12,6 +12,7 @@ import com.zhangbo.pojo.User;
 import com.zhangbo.service.PurchaseService;
 import com.zhangbo.until.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,6 +25,9 @@ import java.util.List;
 
 @Service
 public class PurchaseServiceimpl extends ServiceImpl<PurchaseMapper, TabPurchase> implements PurchaseService {
+
+
+
     @Autowired
     private UserMapper userMapper;
 
@@ -45,12 +49,12 @@ public class PurchaseServiceimpl extends ServiceImpl<PurchaseMapper, TabPurchase
             wrapper.eq("purchase_tender_method", pageQuery.getPurchaseTenderMethod());
         }
         if (StringUtils.isNotEmpty(pageQuery.getSort())) {
-            System.out.println(pageQuery.getSort());
+
             if (pageQuery.getSort().equals("+purchaseBudget")) {
-                System.out.println("升序");
+
                 wrapper.orderByAsc("purchase_budget");
             } else {
-                System.out.println("降序");
+
                 wrapper.orderByDesc("purchase_budget");
             }
         }
@@ -85,6 +89,7 @@ public class PurchaseServiceimpl extends ServiceImpl<PurchaseMapper, TabPurchase
 
     @Override
     public Result purchase_file_upload(MultipartFile file) {
+//        return COSUtil.uploadfile(file);
         return FileUntil.file_upload(file);
     }
 
@@ -116,10 +121,10 @@ public class PurchaseServiceimpl extends ServiceImpl<PurchaseMapper, TabPurchase
         wrapper.ne("purchase_status", "审核通过");
         if (StringUtils.isNotEmpty(pageQuery.getSort())) {
             if (pageQuery.getSort().equals("+purchaseBudget")) {
-                System.out.println("升序");
+
                 wrapper.orderByAsc("purchase_budget");
             } else {
-                System.out.println("降序");
+
                 wrapper.orderByDesc("purchase_budget");
             }
         }
