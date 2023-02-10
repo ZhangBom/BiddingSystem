@@ -23,4 +23,5 @@ public class PageQuery {
     private String purchaseTenderMethod; //招标方式
     private String vendortype;
     private String vendorlevel;
+    private String audit;
 }

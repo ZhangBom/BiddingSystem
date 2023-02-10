@@ -13,17 +13,10 @@ import com.zhangbo.pojo.User;
 import com.zhangbo.service.PurchaseService;
 import com.zhangbo.until.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.servlet.http.HttpServletResponse;
-import java.io.UnsupportedEncodingException;
-
 import org.apache.commons.lang.StringUtils;
-
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public class PurchaseServiceimpl extends ServiceImpl<PurchaseMapper, TabPurchase> implements PurchaseService {
@@ -42,12 +35,15 @@ public class PurchaseServiceimpl extends ServiceImpl<PurchaseMapper, TabPurchase
     public Result findAll(PageQuery pageQuery) {
 
         BackPage<TabPurchase> tabPurchaseBackPage = new BackPage<>();
-
         //构建查询条件
         QueryWrapper<TabPurchase> wrapper = new QueryWrapper<>();
         if (StringUtils.isNotEmpty(pageQuery.getConditions())) {
             HumpUntil humpUntil = new HumpUntil();
             wrapper.eq(humpUntil.hump_underline(pageQuery.getConditions()), pageQuery.getTitle());
+        }
+        //是否为审核页面发起的请求，是：添加条件
+        if(pageQuery.getAudit().equals("true")){
+            wrapper.ne("purchase_status", "审核通过");
         }
         if (StringUtils.isNotEmpty(pageQuery.getPurchaseType())) {
             wrapper.eq("purchase_type", pageQuery.getPurchaseType());
@@ -56,12 +52,9 @@ public class PurchaseServiceimpl extends ServiceImpl<PurchaseMapper, TabPurchase
             wrapper.eq("purchase_tender_method", pageQuery.getPurchaseTenderMethod());
         }
         if (StringUtils.isNotEmpty(pageQuery.getSort())) {
-
             if (pageQuery.getSort().equals("+purchaseBudget")) {
-
                 wrapper.orderByAsc("purchase_budget");
             } else {
-
                 wrapper.orderByDesc("purchase_budget");
             }
         }
@@ -95,9 +88,9 @@ public class PurchaseServiceimpl extends ServiceImpl<PurchaseMapper, TabPurchase
     }
 
     @Override
-    public Result purchase_file_upload(MultipartFile file, String purchhaseid) {
+    public Result purchase_file_upload(MultipartFile file, String purchase_id) {
         //判断该项目是否已有相关文件
-        TabPurchase tabPurchase = purchaseMapper.selectOne(new LambdaQueryWrapper<TabPurchase>().eq(TabPurchase::getPurchaseId, purchhaseid));
+        TabPurchase tabPurchase = purchaseMapper.selectOne(new LambdaQueryWrapper<TabPurchase>().eq(TabPurchase::getPurchaseId, purchase_id));
         if (tabPurchase.getPurchaseFile().equals("未上传") || tabPurchase.getPurchaseFile().equals("")) {
             System.out.println(tabPurchase);
             //  否,上传文件 返回地址
@@ -128,50 +121,10 @@ public class PurchaseServiceimpl extends ServiceImpl<PurchaseMapper, TabPurchase
             return Result.resultFactory(Status.SERVER_FAIL);
         }
     }
-
-    @Override
-    public Result purchase_file_download(String filePath) {
-        return Result.resultFactory(Status.SUBMIT_SUCCESS, COSUtil.deletefile(filePath));
-    }
-
-    @Override
-    public Result findAllAudit(PageQuery pageQuery) {
-        BackPage<TabPurchase> tabPurchaseBackPage = new BackPage<>();
-        //构建查询条件
-        QueryWrapper<TabPurchase> wrapper = new QueryWrapper<>();
-        if (StringUtils.isNotEmpty(pageQuery.getConditions())) {
-            HumpUntil humpUntil = new HumpUntil();
-            wrapper.eq(humpUntil.hump_underline(pageQuery.getConditions()), pageQuery.getTitle());
-        }
-        if (StringUtils.isNotEmpty(pageQuery.getPurchaseType())) {
-            wrapper.eq("purchase_type", pageQuery.getPurchaseType());
-        }
-        if (StringUtils.isNotEmpty(pageQuery.getPurchaseTenderMethod())) {
-            wrapper.eq("purchase_tender_method", pageQuery.getPurchaseTenderMethod());
-        }
-        wrapper.ne("purchase_status", "审核通过");
-        if (StringUtils.isNotEmpty(pageQuery.getSort())) {
-            if (pageQuery.getSort().equals("+purchaseBudget")) {
-
-                wrapper.orderByAsc("purchase_budget");
-            } else {
-
-                wrapper.orderByDesc("purchase_budget");
-            }
-        }
-
-        // 构造分页信息，其中的Page<>(page, PAGE_RECORDS_NUM)的第一个参数是当前页数（从第几页开始查），而第二个参数是每页的记录数（查多少条）
-        Page<TabPurchase> postPage = new Page<>(pageQuery.getCurrentPage(), pageQuery.getLimit());
-
-        // page(postPage, wrapper)这里的第一个参数就是上面定义了的Page对象(分页信息)，第二个参数就是上面定义的条件构造器对象，通过调用这个方法就可以根据你的分页信息以及查询信息获取分页数据
-        IPage<TabPurchase> postIPage = page(postPage, wrapper);
-        //封装返回格式
-        tabPurchaseBackPage.setContentList(postIPage.getRecords());
-        tabPurchaseBackPage.setCurrentPage(postIPage.getCurrent());
-        tabPurchaseBackPage.setTotalPage(postIPage.getPages());
-        tabPurchaseBackPage.setTotalNum(postIPage.getTotal());
-        return Result.resultFactory(Status.SUCCESS, tabPurchaseBackPage);
-    }
+//    @Override
+//    public Result purchase_file_download(String filePath) {
+//        return Result.resultFactory(Status.SUBMIT_SUCCESS, COSUtil.deletefile(filePath));
+//    }
 
     @Override
     public Result purchase_update(TabPurchase purchase) {
