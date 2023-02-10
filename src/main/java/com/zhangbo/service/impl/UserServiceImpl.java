@@ -30,6 +30,9 @@ public class UserServiceImpl  extends ServiceImpl<UserMapper, User> implements U
     @Autowired
     private RedisCache redisCache;
 
+    //头像文件夹
+    private static final String IMAGEFILE = "/image/";
+
     /**
      * 用户登录
      * @param user

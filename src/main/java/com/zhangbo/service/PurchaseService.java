@@ -19,7 +19,7 @@ public interface PurchaseService {
 
 
 
-    Result purchase_file_upload(MultipartFile file);
+    Result purchase_file_upload(MultipartFile file,String purchaseid);
 
     Result purchase_file_delete(String filePath);
 

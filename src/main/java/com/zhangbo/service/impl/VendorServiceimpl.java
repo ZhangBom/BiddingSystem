@@ -18,7 +18,8 @@ import java.util.List;
 public class VendorServiceimpl extends ServiceImpl<VendorMapper, TabVendor> implements VendorService {
     @Autowired
     private VendorMapper vendorMapper;
-
+    //供应商资质文件夹
+    private static final String VENDORFILE = "/vendorfile/";
     @Override
     public Result findAll(PageQuery pageQuery) {
         BackPage<TabVendor> tableVendorBackPage = new BackPage<>();

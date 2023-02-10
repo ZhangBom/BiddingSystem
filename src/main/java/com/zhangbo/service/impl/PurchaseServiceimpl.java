@@ -1,6 +1,7 @@
 package com.zhangbo.service.impl;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -22,14 +23,20 @@ import java.io.UnsupportedEncodingException;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class PurchaseServiceimpl extends ServiceImpl<PurchaseMapper, TabPurchase> implements PurchaseService {
 
 
-
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private PurchaseMapper purchaseMapper;
+    //自定义文件夹名称项目招标文件夹
+    private static final String PURCHASEFILE = "/purchasefile/";
+    //自定义文件夹名称项目标书文件夹
+    private static final String TENDER = "/tenderfile/";
 
     @Override
     public Result findAll(PageQuery pageQuery) {
@@ -83,14 +90,34 @@ public class PurchaseServiceimpl extends ServiceImpl<PurchaseMapper, TabPurchase
     public Result purchase_Add(TabPurchase purchase) {
         //设置项目状态为待审核
         purchase.setPurchaseStatus("待审核");
-//  save(purchase);
+        save(purchase);
         return Result.resultFactory(Status.ADD_INFO_SUCCESS);
     }
 
     @Override
-    public Result purchase_file_upload(MultipartFile file) {
-//        return COSUtil.uploadfile(file);
-        return FileUntil.file_upload(file);
+    public Result purchase_file_upload(MultipartFile file, String purchhaseid) {
+        //判断该项目是否已有相关文件
+        TabPurchase tabPurchase = purchaseMapper.selectOne(new LambdaQueryWrapper<TabPurchase>().eq(TabPurchase::getPurchaseId, purchhaseid));
+        if (tabPurchase.getPurchaseFile().equals("未上传")||tabPurchase.getPurchaseFile().equals("")) {
+            System.out.println(tabPurchase);
+            //  否,上传文件 返回地址
+            String filepath = COSUtil.uploadfile(file, PURCHASEFILE);
+            //  将地址更新
+            tabPurchase.setPurchaseFile(filepath);
+            updateById(tabPurchase);
+            return Result.resultFactory(Status.SUBMIT_SUCCESS);
+        } else {
+            //是 获取文件地址删除文件，重新上传，返回新地址
+            if (COSUtil.deletefile(tabPurchase.getPurchaseFile())) {
+                String filepath = COSUtil.uploadfile(file, PURCHASEFILE);
+                //  将地址更新
+                tabPurchase.setPurchaseFile(filepath);
+                updateById(tabPurchase);
+                return Result.resultFactory(Status.SUBMIT_SUCCESS);
+            } else {
+                return Result.resultFactory(Status.SERVER_FAIL);
+            }
+        }
     }
 
     @Override

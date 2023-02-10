@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
+import java.util.Map;
 
 @CrossOrigin
 @ResponseBody
@@ -60,11 +61,16 @@ public class PurchaseController {
      * @param file
      * @return
      */
+//    @PostMapping("purchase_file_upload")
+//    public Result purchase_file_upload(@RequestParam("file") MultipartFile file) {
+////        @RequestParam("purchaseid") String purchaseid,@RequestParam("purchasename") String purchasename
+////        System.out.println(purchaseid+purchasename);
+//        return purchaseService.purchase_file_upload(file);
+//    }
     @PostMapping("purchase_file_upload")
-    public Result purchase_file_upload(@RequestParam("file") MultipartFile file) {
-        return purchaseService.purchase_file_upload(file);
+    public Result purchase_file_upload(@RequestParam("file") MultipartFile file, @RequestParam("purchaseid") String purchaseid) {
+        return purchaseService.purchase_file_upload(file,purchaseid);
     }
-
     /**
      * 文件删除
      *

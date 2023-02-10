@@ -1,29 +1,15 @@
 package com.zhangbo.until;
 
 
-import com.qcloud.cos.COSClient;
-import com.qcloud.cos.ClientConfig;
-import com.qcloud.cos.auth.BasicCOSCredentials;
-import com.qcloud.cos.auth.COSCredentials;
-import com.qcloud.cos.model.PutObjectRequest;
-import com.qcloud.cos.region.Region;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.util.Random;
 
 public class FileUntil {
 
-    @Value("${cos.secretId}")
-    private String secretId;
-    @Value("${cos.secretKey}")
-    private String secretKey;
-    @Value("${cos.bucketName}")
-    private String bucketName;
-    @Value("${cos.regionName}")
-    private String regionName;
     private static final String purchase_filepath = "E:\\vueprojet\\vue_admin\\vue_admin\\src\\purchasefile\\";
 
     /**

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.zhangbo.mapper.MenuMapper;
 import com.zhangbo.mapper.VendorMapper;
 import com.zhangbo.pojo.TabVendor;
+import com.zhangbo.until.COSUtil;
 import com.zhangbo.until.HumpUntil;
 import com.zhangbo.until.Result;
 import com.zhangbo.until.Status;
@@ -16,14 +17,10 @@ import java.util.Map;
 
 @SpringBootTest
 class BiddingSystemApplicationTests {
-    @Autowired
-    private VendorMapper vendorMapper;
 
     @Test
     void text() {
-        QueryWrapper<TabVendor> wrapper=new QueryWrapper<>();
-        wrapper.select("vendor_level").groupBy("vendor_level");
-        List<TabVendor> list=vendorMapper.selectList(wrapper);
+        System.out.println(COSUtil.deletefile("purchasefile/17241675944973473.7z"));
     }
 
 }
