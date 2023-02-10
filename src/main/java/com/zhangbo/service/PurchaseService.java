@@ -23,9 +23,11 @@ public interface PurchaseService {
 
     Result purchase_file_delete(String filePath);
 
-    Result purchase_file_download(HttpServletResponse response,String filePath) throws UnsupportedEncodingException;
+    Result purchase_file_download(String filePath);
 
     Result findAllAudit(PageQuery pageQuery);
 
     Result purchase_update(TabPurchase purchase);
+
+    Result purchase_delete(TabPurchase purchase);
 }

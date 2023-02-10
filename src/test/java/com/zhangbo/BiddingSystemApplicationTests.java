@@ -20,7 +20,7 @@ class BiddingSystemApplicationTests {
 
     @Test
     void text() {
-        System.out.println(COSUtil.deletefile("purchasefile/17241675944973473.7z"));
+        System.out.println(COSUtil.deletefile("https://zhangbo-1306119450.cos.ap-chengdu.myqcloud.com//purchasefile/9641675998268693.7z"));
     }
 
 }

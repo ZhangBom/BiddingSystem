@@ -61,12 +61,6 @@ public class PurchaseController {
      * @param file
      * @return
      */
-//    @PostMapping("purchase_file_upload")
-//    public Result purchase_file_upload(@RequestParam("file") MultipartFile file) {
-////        @RequestParam("purchaseid") String purchaseid,@RequestParam("purchasename") String purchasename
-////        System.out.println(purchaseid+purchasename);
-//        return purchaseService.purchase_file_upload(file);
-//    }
     @PostMapping("purchase_file_upload")
     public Result purchase_file_upload(@RequestParam("file") MultipartFile file, @RequestParam("purchaseid") String purchaseid) {
         return purchaseService.purchase_file_upload(file,purchaseid);
@@ -81,13 +75,6 @@ public class PurchaseController {
     public Result purchase_file_delete(@RequestBody String filePath) {
         return purchaseService.purchase_file_delete(filePath);
     }
-
-    @GetMapping("purchase_file_download")
-    public Result purchase_file_download(HttpServletResponse response, @RequestBody String filePath) throws UnsupportedEncodingException {
-        return purchaseService.purchase_file_download(response, filePath);
-    }
-
-
     /**
      * 增加项目
      *
@@ -97,6 +84,10 @@ public class PurchaseController {
     @PostMapping("purchase_Add")
     public Result purchase_Add(@RequestBody TabPurchase purchase) {
         return purchaseService.purchase_Add(purchase);
+    }
+    @DeleteMapping("purchase_delete")
+    public Result purchase_delete(@RequestBody TabPurchase purchase) {
+        return purchaseService.purchase_delete(purchase);
     }
 
     @PutMapping("purchase_update")

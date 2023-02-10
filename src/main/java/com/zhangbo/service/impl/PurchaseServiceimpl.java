@@ -98,7 +98,7 @@ public class PurchaseServiceimpl extends ServiceImpl<PurchaseMapper, TabPurchase
     public Result purchase_file_upload(MultipartFile file, String purchhaseid) {
         //判断该项目是否已有相关文件
         TabPurchase tabPurchase = purchaseMapper.selectOne(new LambdaQueryWrapper<TabPurchase>().eq(TabPurchase::getPurchaseId, purchhaseid));
-        if (tabPurchase.getPurchaseFile().equals("未上传")||tabPurchase.getPurchaseFile().equals("")) {
+        if (tabPurchase.getPurchaseFile().equals("未上传") || tabPurchase.getPurchaseFile().equals("")) {
             System.out.println(tabPurchase);
             //  否,上传文件 返回地址
             String filepath = COSUtil.uploadfile(file, PURCHASEFILE);
@@ -122,12 +122,16 @@ public class PurchaseServiceimpl extends ServiceImpl<PurchaseMapper, TabPurchase
 
     @Override
     public Result purchase_file_delete(String filePath) {
-        return FileUntil.purchase_file_delete(filePath);
+        if (COSUtil.deletefile(filePath)) {
+            return Result.resultFactory(Status.SUBMIT_SUCCESS);
+        } else {
+            return Result.resultFactory(Status.SERVER_FAIL);
+        }
     }
 
     @Override
-    public Result purchase_file_download(HttpServletResponse response, String filePath) throws UnsupportedEncodingException {
-        return FileUntil.file_download(response, filePath);
+    public Result purchase_file_download(String filePath) {
+        return Result.resultFactory(Status.SUBMIT_SUCCESS, COSUtil.deletefile(filePath));
     }
 
     @Override
@@ -175,4 +179,19 @@ public class PurchaseServiceimpl extends ServiceImpl<PurchaseMapper, TabPurchase
         return Result.resultFactory(Status.OPERATION_SUCCESS);
     }
 
+    @Override
+    public Result purchase_delete(TabPurchase purchase) {
+        try {
+            if (purchase.getPurchaseFile().equals("未上传")) {
+                purchaseMapper.deleteById(purchase.getPurchaseId());
+            } else {
+                //获取项目文件地址删除文件
+                COSUtil.deletefile(purchase.getPurchaseFile());
+                purchaseMapper.deleteById(purchase.getPurchaseId());
+            }
+            return Result.resultFactory(Status.DELETE_INFO_SUCCESS);
+        } catch (Exception e) {
+            return Result.resultFactory(Status.DELETE_FAIL);
+        }
+    }
 }
