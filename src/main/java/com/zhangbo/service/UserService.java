@@ -1,6 +1,7 @@
 package com.zhangbo.service;
 
 import com.zhangbo.pojo.User;
+import com.zhangbo.until.PageQuery;
 import com.zhangbo.until.Result;
 
 public interface UserService {
@@ -11,4 +12,6 @@ public interface UserService {
     Result register(User user);
 
     Result userinfo(String token);
+
+    Result findAll(PageQuery pageQuery);
 }

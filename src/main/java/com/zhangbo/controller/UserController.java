@@ -2,6 +2,7 @@ package com.zhangbo.controller;
 
 import com.zhangbo.pojo.User;
 import com.zhangbo.service.UserService;
+import com.zhangbo.until.PageQuery;
 import com.zhangbo.until.Result;
 import com.zhangbo.until.Status;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,10 +30,13 @@ public class UserController {
 
 //    @PreAuthorize("hasAuthority('admin')")
     @GetMapping("info")
-    public Result hello(@RequestParam(value = "token", required = true) String token) {
+    public Result get_userinfo(@RequestParam(value = "token", required = true) String token) {
         return userService.userinfo(token);
     }
-
+  @PostMapping("findAll")
+  public Result findAll(@RequestBody PageQuery pageQuery){
+        return userService.findAll(pageQuery);
+  }
     @PostMapping("register")
     public Result register(@RequestBody User user) {
         return userService.register(user);

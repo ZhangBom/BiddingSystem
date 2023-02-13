@@ -1,11 +1,14 @@
 package com.zhangbo.controller;
 
+import com.zhangbo.pojo.LoginUser;
 import com.zhangbo.pojo.TabPurchase;
 import com.zhangbo.service.PurchaseService;
 import com.zhangbo.until.PageQuery;
 import com.zhangbo.until.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,10 +26,13 @@ public class PurchaseController {
     @PreAuthorize("hasAuthority('admin')")
     @PostMapping("purchase_findAll_json")
     public Result purchase_findAll_json(@RequestBody PageQuery pageQuery) {
+        //获取操作的用户对象
+        LoginUser loginUser= (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        //获取用户名
+        System.out.println(loginUser.getUsername());
+
         return purchaseService.findAll(pageQuery);
     }
-
-
 
     /**
      * 查询所有联系人

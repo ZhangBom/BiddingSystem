@@ -26,6 +26,5 @@ public class User implements Serializable {
     private String userCompanyName;
     private String userStatus;
     private String userContactName;
-    private String userAptitude;
     private String userImage;
 }

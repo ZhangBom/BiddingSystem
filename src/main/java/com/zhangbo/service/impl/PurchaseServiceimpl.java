@@ -26,6 +26,9 @@ public class PurchaseServiceimpl extends ServiceImpl<PurchaseMapper, TabPurchase
     private UserMapper userMapper;
     @Autowired
     private PurchaseMapper purchaseMapper;
+
+    @Autowired
+    private RedisCache redisCache;
     //自定义文件夹名称项目招标文件夹
     private static final String PURCHASEFILE = "/purchasefile/";
     //自定义文件夹名称项目标书文件夹
@@ -33,7 +36,6 @@ public class PurchaseServiceimpl extends ServiceImpl<PurchaseMapper, TabPurchase
 
     @Override
     public Result findAll(PageQuery pageQuery) {
-
         BackPage<TabPurchase> tabPurchaseBackPage = new BackPage<>();
         //构建查询条件
         QueryWrapper<TabPurchase> wrapper = new QueryWrapper<>();
