@@ -13,8 +13,12 @@ public class StructureServiceController {
     @Autowired
     private StructureService structureService;
 
-    @GetMapping("fidnAll")
+    @GetMapping("findAll")
     public Result findAll(@RequestParam String tabName){
         return structureService.findAll(tabName);
+    }
+    @GetMapping("findAllopt")
+    public Result findAllopt(){
+        return structureService.findAllopt();
     }
 }

@@ -41,5 +41,9 @@ public class UserController {
     public Result register(@RequestBody User user) {
         return userService.register(user);
     }
+    @PutMapping("banuser")
+    public Result banuser(@RequestBody User user){
+        return  userService.banuser(user);
+    }
 }
 

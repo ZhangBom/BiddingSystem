@@ -23,9 +23,10 @@ class BiddingSystemApplicationTests {
     private StructureMapper structureMapper;
     @Test
     void text() {
-        QueryWrapper<TabStructure> wrapper = new QueryWrapper<>();
-        wrapper.eq("tab_name", "user");
-        List<TabStructure> list=structureMapper.selectList(wrapper);
-        System.out.println(list);}
-
+        HumpUntil humpUntil = new HumpUntil();
+        String a = "ascuserId";
+        a= humpUntil.hump_underline(a);
+        System.out.println(a);
+        System.out.println(a.substring(3));
+    }
 }

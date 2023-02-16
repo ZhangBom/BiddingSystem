@@ -21,7 +21,8 @@ public class PageQuery {
     private String sort;  //排序
     private String purchaseType;  //采购类别
     private String purchaseTenderMethod; //招标方式
-    private String vendortype;
-    private String vendorlevel;
-    private String audit;
+    private String vendortype; //供应商类别
+    private String vendorlevel; //供应商级别
+    private String audit; //审核结果
+    private String usertype; //用户类型
 }

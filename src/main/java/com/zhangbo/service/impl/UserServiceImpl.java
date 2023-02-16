@@ -17,12 +17,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.zhangbo.mapper.UserMapper;
+
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 @Service
-public class UserServiceImpl  extends ServiceImpl<UserMapper, User> implements UserService {
+public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
     @Autowired
     private AuthenticationManager authenticationManager;
     @Autowired
@@ -35,6 +36,7 @@ public class UserServiceImpl  extends ServiceImpl<UserMapper, User> implements U
 
     /**
      * 用户登录
+     *
      * @param user
      * @return
      */
@@ -52,7 +54,7 @@ public class UserServiceImpl  extends ServiceImpl<UserMapper, User> implements U
         String jwt = JwtUtil.createJWT(userId);
         //authenticate存入redis
         String redisKey = "user:" + userId;
-        redisCache.setCacheObject(redisKey, loginUser, 60 * 60* 24, TimeUnit.SECONDS);
+        redisCache.setCacheObject(redisKey, loginUser, 60 * 60 * 24, TimeUnit.SECONDS);
         //把token响应给前端
         HashMap<String, String> map = new HashMap<>();
         map.put("token", jwt);
@@ -61,6 +63,7 @@ public class UserServiceImpl  extends ServiceImpl<UserMapper, User> implements U
 
     /**
      * 用户登出
+     *
      * @return
      */
     @Override
@@ -68,14 +71,16 @@ public class UserServiceImpl  extends ServiceImpl<UserMapper, User> implements U
         //从authentication中获取用户id
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
-        String  userid = loginUser.getUser().getUserId();
+        String userid = loginUser.getUser().getUserId();
         //从redis中删除用户信息
         String redisKey = "user:" + userid;
         redisCache.deleteObject(redisKey);
         return Result.resultFactory(Status.LOGOUT_SUCCESS);
     }
-   /**
+
+    /**
      * 用户注册
+     *
      * @param user
      * @return
      */
@@ -113,8 +118,8 @@ public class UserServiceImpl  extends ServiceImpl<UserMapper, User> implements U
         }
         //从redis中获取用户信息
         String redisKey = "user:" + userid;
-        LoginUser loginUser=redisCache.getCacheObject(redisKey);
-        if(Objects.isNull(loginUser)){
+        LoginUser loginUser = redisCache.getCacheObject(redisKey);
+        if (Objects.isNull(loginUser)) {
             return Result.resultFactory(Status.STATUS_ERROR);
         }
         //封装用户信息，不会把用户所有信息返回前端。
@@ -123,34 +128,36 @@ public class UserServiceImpl  extends ServiceImpl<UserMapper, User> implements U
         userInfo.setAvatar(loginUser.getUser().getUserImage());
         userInfo.setRoles(loginUser.getPermission());
         userInfo.setIntroduction("介绍");
-        return Result.resultFactory(Status.STATUS,userInfo);
+        return Result.resultFactory(Status.STATUS, userInfo);
     }
+
     @Override
     public Result findAll(PageQuery pageQuery) {
+        HumpUntil humpUntil = new HumpUntil();
         BackPage<User> tabPurchaseBackPage = new BackPage<>();
         //构建查询条件
         QueryWrapper<User> wrapper = new QueryWrapper<>();
         if (StringUtils.isNotEmpty(pageQuery.getConditions())) {
-            HumpUntil humpUntil = new HumpUntil();
+
             wrapper.eq(humpUntil.hump_underline(pageQuery.getConditions()), pageQuery.getTitle());
         }
-        //是否为审核页面发起的请求，是：添加条件
-//        if(pageQuery.getAudit().equals("true")){
-//            wrapper.ne("purchase_status", "审核通过");
-//        }
-//        if (StringUtils.isNotEmpty(pageQuery.getPurchaseType())) {
-//            wrapper.eq("purchase_type", pageQuery.getPurchaseType());
-//        }
-//        if (StringUtils.isNotEmpty(pageQuery.getPurchaseTenderMethod())) {
-//            wrapper.eq("purchase_tender_method", pageQuery.getPurchaseTenderMethod());
-//        }
-//        if (StringUtils.isNotEmpty(pageQuery.getSort())) {
-//            if (pageQuery.getSort().equals("+purchaseBudget")) {
-//                wrapper.orderByAsc("purchase_budget");
-//            } else {
-//                wrapper.orderByDesc("purchase_budget");
-//            }
-//        }
+        if (StringUtils.isNotEmpty(pageQuery.getUsertype())) {
+            wrapper.eq("user_type", pageQuery.getUsertype());
+        }
+        if (StringUtils.isNotEmpty(pageQuery.getSort())) {
+            pageQuery.setSort("ascuser_id");
+        } else {
+            pageQuery.setSort(humpUntil.hump_underline(pageQuery.getSort()));
+        }
+//        排序
+        if (pageQuery.getSort().startsWith("asc")) {
+            //截取字符串，按传入字段升序
+            wrapper.orderByAsc(pageQuery.getSort().substring(3));
+        } else {
+            //截取字符串，按传入字段降序
+            wrapper.orderByDesc(pageQuery.getSort().substring(4));
+        }
+
         // 构造分页信息，其中的Page<>(page, PAGE_RECORDS_NUM)的第一个参数是当前页数（从第几页开始查），而第二个参数是每页的记录数（查多少条）
         Page<User> postPage = new Page<>(pageQuery.getCurrentPage(), pageQuery.getLimit());
 
@@ -162,6 +169,12 @@ public class UserServiceImpl  extends ServiceImpl<UserMapper, User> implements U
         tabPurchaseBackPage.setTotalPage(postIPage.getPages());
         tabPurchaseBackPage.setTotalNum(postIPage.getTotal());
         return Result.resultFactory(Status.SUCCESS, tabPurchaseBackPage);
+    }
+
+    @Override
+    public Result banuser(User user) {
+        updateById(user);
+        return Result.resultFactory(Status.OPERATION_SUCCESS);
     }
 
     /**

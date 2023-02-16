@@ -14,4 +14,6 @@ public interface UserService {
     Result userinfo(String token);
 
     Result findAll(PageQuery pageQuery);
+
+    Result banuser(User user);
 }
