@@ -64,7 +64,7 @@ public enum Status {
     CHECKED_FAIL(0,"验证码发送失败"),
     CHECKED_ERROR(0,"验证码错误"),
     CHECKED_TIMEOUT(0,"验证码超时"),
-    CHECKED_HAS(0,"验证码已发送"),
+    CHECKED_HAS(200,"验证码已发送"),
     CHECKED_FAIL_ERROR(0,"验证码错误"),
     //查询
     STATUS(200,"查询成功"),

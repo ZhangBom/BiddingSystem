@@ -15,7 +15,7 @@ import lombok.ToString;
 public class TabOpt {
   private static final long serialVersionUID = -1;
   @TableId
-  private long id;
+  private String id;
   private String type;
   private String name;
 

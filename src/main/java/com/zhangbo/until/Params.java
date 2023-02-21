@@ -1,19 +1,14 @@
-package com.zhangbo.pojo;
+package com.zhangbo.until;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-
-import java.util.List;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class UserInfo {
-    String name;
-    String avatar;
-    String usertype;
-    List roles;
+public class Params {
+    private  String checkcode;
+    private  String newpass;
 }

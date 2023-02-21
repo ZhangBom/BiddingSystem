@@ -31,7 +31,9 @@ public class StructureServiceImpl extends ServiceImpl<StructureMapper, TabStruct
 
     @Override
     public Result findAllopt() {
-        List<TabOpt> list=optMapper.selectList(null);
+        QueryWrapper<TabOpt> wrapper = new QueryWrapper<>();
+        wrapper.ne("name","管理员");
+        List<TabOpt> list=optMapper.selectList(wrapper);
         return Result.resultFactory(Status.STATUS,list);
     }
 }

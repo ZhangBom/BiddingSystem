@@ -28,4 +28,5 @@ public class TabVendor {
   private String vendorContactEmail;
   private String vendorStatus;
   private String vendorAccountStatus;
+  private String vendorAdd;
 }

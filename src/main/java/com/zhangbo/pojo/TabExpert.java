@@ -16,7 +16,7 @@ import lombok.ToString;
 public class TabExpert {
   private static final long serialVersionUID = -1;
   @TableId
-  private long expertId;
+  private String expertId;
   private String expertName;
   private String expertPs;
   private String expertGraduation;

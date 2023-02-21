@@ -15,7 +15,7 @@ import lombok.ToString;
 public class TabStructure {
   private static final long serialVersionUID = -1;
   @TableId
-  private long strId;
+  private String strId;
   private String tabName;
   private String fieldName;
   private String fieldNameCh;
