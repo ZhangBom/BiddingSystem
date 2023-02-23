@@ -31,7 +31,7 @@ public class UserController {
     }
 
 //    @PreAuthorize("hasAuthority('admin')")
-    @GetMapping("info")
+    @GetMapping("userinfo")
 //    public Result get_userinfo(@RequestParam(value = "token", required = true) String token) {
     public Result get_userinfo() {
         return userService.userinfo();

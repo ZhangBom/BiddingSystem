@@ -26,4 +26,6 @@ public interface UserService {
     Result checkbox();
 
     Result updatepass(Params params);
+
+
 }

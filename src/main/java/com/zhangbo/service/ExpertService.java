@@ -8,4 +8,6 @@ public interface ExpertService {
     Result findAll(PageQuery pageQuery);
 
     Result expert_update(TabExpert expert);
+
+    Result getInfo();
 }

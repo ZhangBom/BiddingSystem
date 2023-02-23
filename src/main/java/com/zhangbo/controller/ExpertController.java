@@ -24,4 +24,8 @@ public class ExpertController {
     public Result expert_update(@RequestBody TabExpert expert) {
         return expertService.expert_update(expert);
     }
+    @GetMapping("info")
+    public Result getInfo(){
+        return expertService.getInfo();
+    }
 }

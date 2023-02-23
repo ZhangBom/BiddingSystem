@@ -70,4 +70,12 @@ public class VendorServiceimpl extends ServiceImpl<VendorMapper, TabVendor> impl
         updateById(vendor);
         return Result.resultFactory(Status.DELETE_INFO_SUCCESS);
     }
+
+    @Override
+    public Result getInfo() {
+        QueryWrapper<TabVendor> wrapper = new QueryWrapper<>();
+        wrapper.eq("vendor_account",GetUser.getuserid());
+        TabVendor vendor = vendorMapper.selectOne(wrapper);
+        return Result.resultFactory(Status.SUCCESS, vendor);
+    }
 }

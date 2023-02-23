@@ -134,6 +134,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         userInfo.setAvatar(loginUser.getUser().getUserImage());
         userInfo.setRoles(loginUser.getPermission());
         userInfo.setUsertype(loginUser.getUser().getUserType());
+        userInfo.setUserphone(loginUser.getUser().getUserPhone());
+        userInfo.setUseremail(loginUser.getUser().getUserEmail());
         return Result.resultFactory(Status.STATUS, userInfo);
     }
 

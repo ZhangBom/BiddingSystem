@@ -15,5 +15,7 @@ public class UserInfo {
     String name;
     String avatar;
     String usertype;
+    String userphone;
+    String useremail;
     List roles;
 }

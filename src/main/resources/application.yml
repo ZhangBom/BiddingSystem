@@ -31,7 +31,7 @@ mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 cos:
-  baseUrl: https://zhangbo-1306119450.cos.ap-chengdu.myqcloud.com
+  baseUrl: https://zhangbo-1306119450.cos.ap-chengdu.myqcloud.com/
   accessKey: AKID9Jya44zpfVJiz8JLI9sSpW6Wmy7AA6vb
   secretKey: oRmvhMxQmz6SddS2Wq2OwLZcanvvpXAb
   regionName: ap-chengdu

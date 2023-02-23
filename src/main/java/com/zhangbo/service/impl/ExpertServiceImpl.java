@@ -45,4 +45,11 @@ public class ExpertServiceImpl extends ServiceImpl<ExpertMapper, TabExpert> impl
         updateById(expert);
         return Result.resultFactory(Status.DELETE_INFO_SUCCESS);
     }
+    @Override
+    public Result getInfo() {
+        QueryWrapper<TabExpert> wrapper = new QueryWrapper<>();
+        wrapper.eq("expert_account",GetUser.getuserid());
+        TabExpert expert = expertMapper.selectOne(wrapper);
+        return Result.resultFactory(Status.SUCCESS, expert);
+    }
 }

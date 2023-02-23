@@ -16,13 +16,11 @@ public class TabAdmin {
   private static final long serialVersionUID = -1;
   @TableId
   private String adminId;
-  private String adminAccount;
+  private String adminName;
+  private String employeesPhone;
   private String employeesId;
   private String employeesName;
-  private String employeesPhone;
-  private String employeeEmail;
-
-
+  private String employeesEmail;
 
 
 }

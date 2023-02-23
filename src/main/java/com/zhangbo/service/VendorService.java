@@ -12,4 +12,6 @@ public interface VendorService {
     Result find_vendor_type();
 
     Result vendor_update(TabVendor vendor);
+
+    Result getInfo();
 }

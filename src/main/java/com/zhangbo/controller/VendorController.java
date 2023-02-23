@@ -54,4 +54,8 @@ public class VendorController {
     public Result vendor_update(@RequestBody TabVendor vendor) {
         return vendorService.vendor_update(vendor);
     }
+    @GetMapping("info")
+    public Result getInfo(){
+        return vendorService.getInfo();
+    }
 }
