@@ -5,9 +5,7 @@ import com.zhangbo.service.UserService;
 import com.zhangbo.until.PageQuery;
 import com.zhangbo.until.Params;
 import com.zhangbo.until.Result;
-import com.zhangbo.until.Status;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -44,7 +42,7 @@ public class UserController {
     public Result register(@RequestBody User user) {
         return userService.register(user);
     }
-    @PutMapping("banuser")
+    @PutMapping("ban_user")
     public Result banuser(@RequestBody User user){
         return  userService.banuser(user);
     }
@@ -52,13 +50,17 @@ public class UserController {
     public Result user_avatar(@RequestParam MultipartFile avatar){
         return userService.user_avatar(avatar);
     }
-    @GetMapping("checkcode")
+    @GetMapping("check_code")
     public Result checkcode(){
         return userService.checkbox();
     }
-    @PutMapping("updatepass")
+    @PutMapping("update_pass")
     public Result updatepass(@RequestBody Params params){
         return userService.updatepass(params);
+    }
+    @PutMapping("user_update")
+    public Result user_update(@RequestBody Params params){
+        return userService.user_update(params);
     }
 }
 

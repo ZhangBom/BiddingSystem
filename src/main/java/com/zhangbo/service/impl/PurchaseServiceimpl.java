@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.sun.jmx.snmp.Timestamp;
 import com.zhangbo.mapper.PurchaseMapper;
 import com.zhangbo.mapper.UserMapper;
 import com.zhangbo.pojo.TabPurchase;
@@ -27,8 +28,6 @@ public class PurchaseServiceimpl extends ServiceImpl<PurchaseMapper, TabPurchase
     @Autowired
     private PurchaseMapper purchaseMapper;
 
-    @Autowired
-    private RedisCache redisCache;
     //自定义文件夹名称项目招标文件夹
     private static final String PURCHASEFILE = "/purchasefile/";
     //自定义文件夹名称项目标书文件夹
@@ -41,10 +40,12 @@ public class PurchaseServiceimpl extends ServiceImpl<PurchaseMapper, TabPurchase
         QueryWrapper<TabPurchase> wrapper = new QueryWrapper<>();
         if (StringUtils.isNotEmpty(pageQuery.getConditions())) {
             HumpUntil humpUntil = new HumpUntil();
-            wrapper.eq(humpUntil.hump_underline(pageQuery.getConditions()), pageQuery.getTitle());
+            wrapper.like(humpUntil.hump_underline(pageQuery.getConditions()), pageQuery.getTitle());
         }
         //是否为审核页面发起的请求，是：添加条件
         if(pageQuery.getAudit().equals("true")){
+            wrapper.ne("purchase_status", "待审核");
+        }else if(pageQuery.getAudit().equals("auditAccess")){
             wrapper.ne("purchase_status", "审核通过");
         }
         if (StringUtils.isNotEmpty(pageQuery.getPurchaseType())) {
@@ -123,11 +124,6 @@ public class PurchaseServiceimpl extends ServiceImpl<PurchaseMapper, TabPurchase
             return Result.resultFactory(Status.SERVER_FAIL);
         }
     }
-//    @Override
-//    public Result purchase_file_download(String filePath) {
-//        return Result.resultFactory(Status.SUBMIT_SUCCESS, COSUtil.deletefile(filePath));
-//    }
-
     @Override
     public Result purchase_update(TabPurchase purchase) {
         updateById(purchase);
@@ -148,5 +144,19 @@ public class PurchaseServiceimpl extends ServiceImpl<PurchaseMapper, TabPurchase
         } catch (Exception e) {
             return Result.resultFactory(Status.DELETE_FAIL);
         }
+    }
+
+    @Override
+    public Result purchase_top10() {
+        QueryWrapper<TabPurchase> wrapper=new QueryWrapper<>();
+        wrapper.orderByDesc("purchase_registration_deadline");
+        wrapper.last("limit 0,10 ");
+        List<TabPurchase> list =purchaseMapper.selectList(wrapper);
+        return Result.resultFactory(Status.STATUS,list);
+    }
+
+    @Override
+    public Result purchase_info() {
+        return null;
     }
 }

@@ -18,8 +18,6 @@ public class TabPurchase {
     private String purchaseName;
     private String purchaseExplain;
     private Integer purchaseBudget;
-    private String purchaseStartTime;
-    private String purchaseEndTime;
     private Integer purchaseCharge;
     private String purchaseDeposit;
     private String purchaseSubmission;
@@ -27,11 +25,11 @@ public class TabPurchase {
     private String purchaseBidOpeningMethod;
     private String purchaseTenderMethod;
     private String purchaseRegistrationDeadline;
-    private String purchaseBidsTime;
     private String purchaseType;
     private String purchaseContact;
     private String purchasePhone;
     private String purchaseEmail;
     private String purchaseFile;
     private String purchaseStatus;
+    private String purchaseEnd;
 }

@@ -11,4 +11,8 @@ import lombok.ToString;
 public class Params {
     private  String checkcode;
     private  String newpass;
+    private String userPhone;
+    private String userType;
+    private String userEmail;
+    private String userName;
 }

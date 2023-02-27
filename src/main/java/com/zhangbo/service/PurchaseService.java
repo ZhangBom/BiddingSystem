@@ -23,4 +23,8 @@ public interface PurchaseService {
     Result purchase_update(TabPurchase purchase);
 
     Result purchase_delete(TabPurchase purchase);
+
+    Result purchase_top10();
+
+    Result purchase_info();
 }

@@ -130,7 +130,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
         //封装用户信息，不会把用户所有信息返回前端。
         UserInfo userInfo = new UserInfo();
-        userInfo.setName(loginUser.getUsername());
+        userInfo.setName(loginUser.getUser().getUserContactName());
         userInfo.setAvatar(loginUser.getUser().getUserImage());
         userInfo.setRoles(loginUser.getPermission());
         userInfo.setUsertype(loginUser.getUser().getUserType());
@@ -231,6 +231,28 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             //更新密码
             updateById(user);
             return Result.resultFactory(Status.MODIFY_PASSWORD_SUCCESS);
+        } else {
+            return Result.resultFactory(Status.CHECKED_ERROR);
+        }
+    }
+
+    @Override
+    public Result user_update(Params params) {
+        //匹配验证码
+        String redisKey = "code:" + GetUser.getuserid();
+        if (params.getCheckcode().equals(redisCache.getCacheObject(redisKey))) {
+            //取出redis中的用户信息
+            String redisuserKey = "user:" + GetUser.getuserid();
+           User user=userMapper.selectById(GetUser.getuserid());
+           user.setUserEmail(params.getUserEmail());
+           user.setUserContactName(params.getUserName());
+           user.setUserPhone(params.getUserPhone());
+           user.setUserContactName(params.getUserName());
+           updateById(user);
+            LoginUser loginUser=redisCache.getCacheObject(redisuserKey);
+            loginUser.setUser(user);
+            redisCache.setCacheObject(redisuserKey,loginUser,60 * 60 * 24, TimeUnit.SECONDS);
+            return Result.resultFactory(Status.MODIFY_INFO_SUCCESS);
         } else {
             return Result.resultFactory(Status.CHECKED_ERROR);
         }

@@ -28,4 +28,5 @@ public interface UserService {
     Result updatepass(Params params);
 
 
+    Result user_update(Params params);
 }
