@@ -19,10 +19,15 @@ import java.util.Map;
 
 @SpringBootTest
 class BiddingSystemApplicationTests {
-    @Autowired
-    PurchaseService purchaseService;
+
     @Test
     void text() {
-        purchaseService.purchase_top10();
+       DateDiff dateDiff=new DateDiff();
+       String str="2023 年 03 月 17 日";
+//      dateDiff.DateWeekend("2023 年 03 月 17 日");
+        str = str.replaceAll("\\s*","");
+        System.out.println(dateDiff.getNow());
+//       application.setApplicationTime(dateDiff.getNow());
+
     }
 }

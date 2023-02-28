@@ -26,5 +26,4 @@ public interface PurchaseService {
 
     Result purchase_top10();
 
-    Result purchase_info();
 }

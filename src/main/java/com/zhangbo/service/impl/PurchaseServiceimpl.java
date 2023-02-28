@@ -7,9 +7,13 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.sun.jmx.snmp.Timestamp;
+import com.zhangbo.mapper.ApplicationMapper;
 import com.zhangbo.mapper.PurchaseMapper;
 import com.zhangbo.mapper.UserMapper;
+import com.zhangbo.mapper.VendorMapper;
+import com.zhangbo.pojo.TabApplication;
 import com.zhangbo.pojo.TabPurchase;
+import com.zhangbo.pojo.TabVendor;
 import com.zhangbo.pojo.User;
 import com.zhangbo.service.PurchaseService;
 import com.zhangbo.until.*;
@@ -18,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.apache.commons.lang.StringUtils;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class PurchaseServiceimpl extends ServiceImpl<PurchaseMapper, TabPurchase> implements PurchaseService {
@@ -27,7 +32,8 @@ public class PurchaseServiceimpl extends ServiceImpl<PurchaseMapper, TabPurchase
     private UserMapper userMapper;
     @Autowired
     private PurchaseMapper purchaseMapper;
-
+    @Autowired
+    private VendorMapper vendorMapper;
     //自定义文件夹名称项目招标文件夹
     private static final String PURCHASEFILE = "/purchasefile/";
     //自定义文件夹名称项目标书文件夹
@@ -153,10 +159,5 @@ public class PurchaseServiceimpl extends ServiceImpl<PurchaseMapper, TabPurchase
         wrapper.last("limit 0,10 ");
         List<TabPurchase> list =purchaseMapper.selectList(wrapper);
         return Result.resultFactory(Status.STATUS,list);
-    }
-
-    @Override
-    public Result purchase_info() {
-        return null;
     }
 }

@@ -82,8 +82,4 @@ public class PurchaseController {
     public Result purchase_top10(){
         return purchaseService.purchase_top10();
     }
-    @GetMapping("purchase_info")
-    public Result purchase_info(){
-        return purchaseService.purchase_info();
-    }
 }

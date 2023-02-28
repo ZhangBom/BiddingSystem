@@ -78,4 +78,19 @@ public class VendorServiceimpl extends ServiceImpl<VendorMapper, TabVendor> impl
         TabVendor vendor = vendorMapper.selectOne(wrapper);
         return Result.resultFactory(Status.SUCCESS, vendor);
     }
+
+    @Override
+    public Result checkvendor() {
+        //获取报名用户id，查询供应商
+        String id=GetUser.getuserid();
+        QueryWrapper<TabVendor> wrapper=new QueryWrapper<>();
+        wrapper.eq("vendor_account",id);
+        TabVendor vendor=vendorMapper.selectOne(wrapper);
+        //判断审核状态，账号状态是否正常
+        if(vendor.getVendorAccountStatus().equals(0) && vendor.getVendorStatus().equals("审核通过")){
+            return Result.resultFactory(Status.SUCCESS,true);
+        }else {
+            return Result.resultFactory(Status.SIGN_PURCHASE_FAIL,false);
+        }
+    }
 }

@@ -58,4 +58,9 @@ public class VendorController {
     public Result getInfo(){
         return vendorService.getInfo();
     }
+
+    @GetMapping("checkvendor")
+    public Result checkvendor(){
+        return vendorService.checkvendor();
+    }
 }
