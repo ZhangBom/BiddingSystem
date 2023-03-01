@@ -26,4 +26,6 @@ public class PageQuery {
     private String audit; //审核结果
     private String usertype; //用户类型
     private String articleType;//公告类型
+    private String purchaseId;
+    private String purchaseManager;
 }

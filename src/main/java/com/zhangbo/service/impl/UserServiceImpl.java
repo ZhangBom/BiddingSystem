@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zhangbo.mapper.SuggestionMapper;
 import com.zhangbo.pojo.*;
 import com.zhangbo.service.UserService;
 import com.zhangbo.until.*;
@@ -13,6 +14,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.zhangbo.mapper.UserMapper;
@@ -33,10 +35,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Autowired
     private RedisCache redisCache;
     @Autowired
-    UserMapper userMapper;
+    private UserMapper userMapper;
+    @Autowired
+    private SuggestionMapper suggestionMapper;
 
     //头像文件夹
-    private static final String IMAGEFILE = "/image/";
+    private static final String IMAGEFILE = "/avatar/";
 
     /**
      * 用户登录
@@ -72,11 +76,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      */
     @Override
     public Result logout() {
-        //获取操作的用户对象
-        LoginUser loginUser = (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String userid = loginUser.getUser().getUserId();
+
         //从redis中删除用户信息
-        String redisKey = "user:" + userid;
+        String redisKey = "user:" + GetUser.getuserid();
         redisCache.deleteObject(redisKey);
         return Result.resultFactory(Status.LOGOUT_SUCCESS);
     }
@@ -119,11 +121,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 //            return Result.resultFactory(Status.STATUS_ERROR);
 //        }
         //获取操作的用户对象
-        LoginUser loginUsers = (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String userid = loginUsers.getUser().getUserId();
+//        LoginUser loginUsers = (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        String userid = loginUsers.getUser().getUserId();
 
         //从redis中获取用户信息
-        String redisKey = "user:" + userid;
+        String redisKey = "user:" + GetUser.getuserid();
         LoginUser loginUser = redisCache.getCacheObject(redisKey);
         if (Objects.isNull(loginUser)) {
             return Result.resultFactory(Status.STATUS_ERROR);
@@ -257,6 +259,46 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             return Result.resultFactory(Status.CHECKED_ERROR);
         }
     }
+
+    @Override
+    public Result suggestion(String textarea) {
+        TabSuggestion tabSuggestion=new TabSuggestion();
+        tabSuggestion.setContent(textarea);
+        tabSuggestion.setUserId(GetUser.getuserid());
+        DateDiff dateDiff=new DateDiff();
+        tabSuggestion.setSuggestionTime(dateDiff.getNow());
+        tabSuggestion.setStatus("未处理");
+        suggestionMapper.insert(tabSuggestion);
+        return Result.resultFactory(Status.SUGGESTION_SUCCESS);
+    }
+
+    @Override
+    public Result get_suggestion(PageQuery pageQuery) {
+        BackPage<TabSuggestion> suggestionBackPage = new BackPage<>();
+        //构建查询条件
+        QueryWrapper<TabSuggestion> wrapper = new QueryWrapper<>();
+        wrapper.orderByDesc("suggestion_time");
+        // 构造分页信息，其中的Page<>(page, PAGE_RECORDS_NUM)的第一个参数是当前页数（从第几页开始查），而第二个参数是每页的记录数（查多少条）
+        Page<TabSuggestion> postPage = new Page<>(pageQuery.getCurrentPage(), pageQuery.getLimit());
+        // page(postPage, wrapper)这里的第一个参数就是上面定义了的Page对象(分页信息)，第二个参数就是上面定义的条件构造器对象，通过调用这个方法就可以根据你的分页信息以及查询信息获取分页数据
+        IPage<TabSuggestion> postIPage = suggestionMapper.selectPage(postPage, wrapper);
+        //封装返回格式
+        suggestionBackPage.setContentList(postIPage.getRecords());
+        suggestionBackPage.setCurrentPage(postIPage.getCurrent());
+        suggestionBackPage.setTotalPage(postIPage.getPages());
+        suggestionBackPage.setTotalNum(postIPage.getTotal());
+        return Result.resultFactory(Status.SUCCESS, suggestionBackPage);
+
+    }
+
+    @Override
+    public Result deal_Suggestion(TabSuggestion suggestion) {
+        suggestion.setStatus("已处理");
+        MailUtils.sendMail(suggestion.getUserId(),"您的反馈我们已经处理，请前往投诉处理公告处查看处理详情","xx人民医院");
+        suggestionMapper.updateById(suggestion);
+        return Result.resultFactory(Status.OPERATION_SUCCESS);
+    }
+
 
     /**
      * 检查用名是否存在

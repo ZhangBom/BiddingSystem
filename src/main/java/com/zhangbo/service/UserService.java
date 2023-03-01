@@ -1,9 +1,11 @@
 package com.zhangbo.service;
 
+import com.zhangbo.pojo.TabSuggestion;
 import com.zhangbo.pojo.User;
 import com.zhangbo.until.PageQuery;
 import com.zhangbo.until.Params;
 import com.zhangbo.until.Result;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface UserService {
@@ -27,4 +29,11 @@ public interface UserService {
 
 
     Result user_update(Params params);
+
+
+    Result suggestion(String textarea);
+
+    Result get_suggestion(PageQuery pageQuery);
+
+    Result deal_Suggestion(TabSuggestion suggestion);
 }

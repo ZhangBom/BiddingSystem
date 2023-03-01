@@ -44,9 +44,12 @@ public class PurchaseServiceimpl extends ServiceImpl<PurchaseMapper, TabPurchase
         }
         //是否为审核页面发起的请求，是：添加条件
         if(pageQuery.getAudit().equals("true")){
-            wrapper.ne("purchase_status", "待审核");
+            wrapper.eq("purchase_status", "待审核");
         }else if(pageQuery.getAudit().equals("auditAccess")){
-            wrapper.ne("purchase_status", "审核通过");
+            wrapper.eq("purchase_status", "审核通过");
+        }
+        if(StringUtils.isNotEmpty(pageQuery.getPurchaseManager())){
+            wrapper.eq("purchase_phone", GetUser.getuser().getUserPhone());
         }
         if (StringUtils.isNotEmpty(pageQuery.getPurchaseType())) {
             wrapper.eq("purchase_type", pageQuery.getPurchaseType());
@@ -161,5 +164,10 @@ public class PurchaseServiceimpl extends ServiceImpl<PurchaseMapper, TabPurchase
         wrapper.eq("purchase_id",purchaseId);
         TabPurchase purchase=purchaseMapper.selectOne(wrapper);
         return Result.resultFactory(Status.SUCCESS,purchase);
+    }
+
+    @Override
+    public Result get_my_purchase() {
+        return null;
     }
 }

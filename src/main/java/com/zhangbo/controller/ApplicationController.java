@@ -30,4 +30,17 @@ public class ApplicationController {
     public Result purchase_file_upload(@RequestParam("file") MultipartFile file, @RequestParam("purchaseId") String purchase_id) {
         return applicationService.purchase_file_upload(file,purchase_id);
     }
+    //查出该专家参与的所有项目
+    @PostMapping("expert_get_purchase")
+    public Result  expert_get_purchase(@RequestBody PageQuery pageQuery){
+        return applicationService.expert_get_purchase(pageQuery);
+    }
+    @PostMapping("get_vendor_purchase_file")
+    public Result get_vendor_purchase_file(@RequestBody PageQuery pageQuery){
+        return applicationService.get_vendor_purchase_file(pageQuery);
+    }
+    @GetMapping("sure_score")
+    public Result sure_score(@RequestParam("purchaseId") String purchase_id){
+        return applicationService.sure_score(purchase_id);
+    }
 }

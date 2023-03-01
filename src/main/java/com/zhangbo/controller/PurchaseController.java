@@ -27,9 +27,6 @@ public class PurchaseController {
     public Result purchase_findAll_json(@RequestBody PageQuery pageQuery) {
         //获取操作的用户对象
         LoginUser loginUser= (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        //获取用户名
-        System.out.println(loginUser.getUsername());
-
         return purchaseService.findAll(pageQuery);
     }
 

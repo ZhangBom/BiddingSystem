@@ -4,7 +4,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zhangbo.mapper.ExpertMapper;
 import com.zhangbo.mapper.VendorMapper;
+import com.zhangbo.pojo.TabExpert;
+import com.zhangbo.pojo.User;
 import com.zhangbo.until.BackPage;
 import com.zhangbo.until.PageQuery;
 import com.zhangbo.pojo.TabVendor;
@@ -13,6 +16,8 @@ import com.zhangbo.until.*;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.jws.soap.SOAPBinding;
 import java.util.List;
 
 
@@ -20,8 +25,11 @@ import java.util.List;
 public class VendorServiceimpl extends ServiceImpl<VendorMapper, TabVendor> implements VendorService {
     @Autowired
     private VendorMapper vendorMapper;
+    @Autowired
+    private ExpertMapper expertMapper;
     //供应商资质文件夹
     private static final String VENDORFILE = "/vendorfile/";
+
     @Override
     public Result findAll(PageQuery pageQuery) {
         BackPage<TabVendor> tableVendorBackPage = new BackPage<>();
@@ -76,7 +84,7 @@ public class VendorServiceimpl extends ServiceImpl<VendorMapper, TabVendor> impl
     @Override
     public Result getInfo() {
         QueryWrapper<TabVendor> wrapper = new QueryWrapper<>();
-        wrapper.eq("vendor_account",GetUser.getuserid());
+        wrapper.eq("vendor_account", GetUser.getuserid());
         TabVendor vendor = vendorMapper.selectOne(wrapper);
         return Result.resultFactory(Status.SUCCESS, vendor);
     }
@@ -84,15 +92,28 @@ public class VendorServiceimpl extends ServiceImpl<VendorMapper, TabVendor> impl
     @Override
     public Result checkvendor() {
         //获取报名用户id，查询供应商
-        String id=GetUser.getuserid();
-        QueryWrapper<TabVendor> wrapper=new QueryWrapper<>();
-        wrapper.eq("vendor_account",id);
-        TabVendor vendor=vendorMapper.selectOne(wrapper);
-        //判断审核状态，账号状态是否正常
-        if(vendor.getVendorAccountStatus().equals("0") && vendor.getVendorStatus().equals("审核通过")){
-            return Result.resultFactory(Status.SUCCESS,true);
-        }else {
-            return Result.resultFactory(Status.SIGN_PURCHASE_FAIL,false);
+        if (GetUser.getuser().getUserType().equals("供应商")) {
+            QueryWrapper<TabVendor> wrapper = new QueryWrapper<>();
+            wrapper.eq("vendor_account", GetUser.getuserid());
+            TabVendor vendor = vendorMapper.selectOne(wrapper);
+            //判断审核状态，账号状态是否正常
+            if (vendor.getVendorAccountStatus().equals("0") && vendor.getVendorStatus().equals("审核通过")) {
+                return Result.resultFactory(Status.SUCCESS, true);
+            } else {
+                return Result.resultFactory(Status.SIGN_PURCHASE_FAIL, false);
+            }
+        } else if (GetUser.getuser().getUserType().equals("专家")) {
+            QueryWrapper<TabExpert> wrapper = new QueryWrapper<>();
+            wrapper.eq("expert_account", GetUser.getuserid());
+            TabExpert expert = expertMapper.selectOne(wrapper);
+            //判断审核状态，账号状态是否正常
+            if (expert.getExpertAccountStatus().equals("0") && expert.getExpertStatus().equals("审核通过")) {
+                return Result.resultFactory(Status.SUCCESS, true);
+            } else {
+                return Result.resultFactory(Status.SIGN_PURCHASE_FAIL, false);
+            }
+        } else {
+            return Result.resultFactory(Status.SIGN_PURCHASE_FAIL, false);
         }
     }
 }

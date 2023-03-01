@@ -27,4 +27,6 @@ public interface PurchaseService {
     Result purchase_top10();
 
     Result find_purchaseById(String purchaseId);
+
+    Result get_my_purchase();
 }

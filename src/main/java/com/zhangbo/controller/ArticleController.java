@@ -6,6 +6,7 @@ import com.zhangbo.until.PageQuery;
 import com.zhangbo.until.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @CrossOrigin
 @ResponseBody
@@ -23,4 +24,16 @@ public class ArticleController {
     public Result findAll_result(@RequestBody PageQuery pageQuery){
         return articleService.findAll_result(pageQuery);
     }
+
+    @GetMapping("articleModel")
+    public Result articleModel(){
+       return articleService.articleModel();
+    }
+
+    @PostMapping("articleImage")
+    public Result articleImage(@RequestParam("file") MultipartFile file){
+        return articleService.articleImage(file);
+    }
+
+
 }

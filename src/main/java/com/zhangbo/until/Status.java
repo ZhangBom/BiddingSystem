@@ -8,12 +8,16 @@ public enum Status {
      */
     SUCCESS(200, "请求数据成功"),
     FAIL(0, "请求数据失败"),
-    SIGN_PURCHASE_FAIL(0,"您不是供应商或未通过资质审核！请重新提交资质材料"),
+    SIGN_PURCHASE_FAIL(0,"您不是供应商、专家或未通过资质审核！请重新提交资质材料"),
     SIGN_PURCHASE_SUCCESS(200,"报名成功！请查收邮件"),
     SIGN_PURCHASE_SUCCESS_MAIL_FAIL(200,"报名成功，邮件发送失败！请联系该项目负责人！"),
     SIGN_PURCHASE_REPEAT(0,"报名失败，你的公司已经报名！"),
     SUBMIT_SUCCESS(200,"提交成功"),
     SUBMIT_FAIL(0,"提交失败"),
+    SCORE_SUCCESS(200,"评分成功"),
+    SCORE_UPDATE_SUCCESS(200,"评分更新成功"),
+    PURCHASE_BIDDING_SUCCESS(200,"中标通知已发送"),
+    SUGGESTION_SUCCESS(200,"感谢您的反馈，请关注投诉处理板块公告回复"),
     OPERATION_SUCCESS(200,"操作成功"),
     //login
     LOGIN_SUCCESS(200, "登录成功"),

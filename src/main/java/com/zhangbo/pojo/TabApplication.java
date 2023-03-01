@@ -18,7 +18,7 @@ public class TabApplication {
   @TableId
   private String applicationId;
   private String purchaseId;
-  private String expertId;
+  private String expertAccount;
   private String applicationTime;
   private String purchaseContact;
   private String purchaseBidsTime;
@@ -28,4 +28,5 @@ public class TabApplication {
   private String purchaseName;
   private String purchaseExplain;
   private String purchaseFilePath;
+  private int vendorScore;
 }

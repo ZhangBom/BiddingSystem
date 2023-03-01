@@ -1,5 +1,6 @@
 package com.zhangbo.controller;
 
+import com.zhangbo.pojo.TabSuggestion;
 import com.zhangbo.pojo.User;
 import com.zhangbo.service.UserService;
 import com.zhangbo.until.PageQuery;
@@ -47,7 +48,7 @@ public class UserController {
         return  userService.banuser(user);
     }
     @PostMapping("user_avatar")
-    public Result user_avatar(@RequestParam MultipartFile avatar){
+    public Result user_avatar(@RequestParam("file") MultipartFile avatar){
         return userService.user_avatar(avatar);
     }
     @GetMapping("check_code")
@@ -61,6 +62,18 @@ public class UserController {
     @PutMapping("user_update")
     public Result user_update(@RequestBody Params params){
         return userService.user_update(params);
+    }
+    @GetMapping("suggestion")
+    public Result suggestion(@RequestParam("textarea") String textarea){
+        return userService.suggestion(textarea);
+    }
+    @PostMapping("get_suggestion")
+    public Result get_suggestion(@RequestBody PageQuery pageQuery){
+        return userService.get_suggestion(pageQuery);
+    }
+    @PutMapping("deal_Suggestion")
+    public Result deal_Suggestion(@RequestBody TabSuggestion suggestion){
+        return userService.deal_Suggestion(suggestion);
     }
 }
 
