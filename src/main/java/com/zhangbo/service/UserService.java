@@ -6,8 +6,6 @@ import com.zhangbo.until.Params;
 import com.zhangbo.until.Result;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-
 public interface UserService {
     Result login(User user);
 

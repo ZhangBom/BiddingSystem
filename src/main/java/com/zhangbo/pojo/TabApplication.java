@@ -24,4 +24,8 @@ public class TabApplication {
   private String purchaseBidsTime;
   private String vendorId;
   private String purchasePhone;
+  private String vendorAccount;
+  private String purchaseName;
+  private String purchaseExplain;
+  private String purchaseFilePath;
 }

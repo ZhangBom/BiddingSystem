@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zhangbo.mapper.VendorMapper;
+import com.zhangbo.until.BackPage;
+import com.zhangbo.until.PageQuery;
 import com.zhangbo.pojo.TabVendor;
 import com.zhangbo.service.VendorService;
 import com.zhangbo.until.*;
@@ -87,7 +89,7 @@ public class VendorServiceimpl extends ServiceImpl<VendorMapper, TabVendor> impl
         wrapper.eq("vendor_account",id);
         TabVendor vendor=vendorMapper.selectOne(wrapper);
         //判断审核状态，账号状态是否正常
-        if(vendor.getVendorAccountStatus().equals(0) && vendor.getVendorStatus().equals("审核通过")){
+        if(vendor.getVendorAccountStatus().equals("0") && vendor.getVendorStatus().equals("审核通过")){
             return Result.resultFactory(Status.SUCCESS,true);
         }else {
             return Result.resultFactory(Status.SIGN_PURCHASE_FAIL,false);

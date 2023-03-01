@@ -25,4 +25,5 @@ public class PageQuery {
     private String vendorlevel; //供应商级别
     private String audit; //审核结果
     private String usertype; //用户类型
+    private String articleType;//公告类型
 }

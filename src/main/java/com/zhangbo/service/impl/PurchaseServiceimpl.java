@@ -6,15 +6,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.sun.jmx.snmp.Timestamp;
-import com.zhangbo.mapper.ApplicationMapper;
 import com.zhangbo.mapper.PurchaseMapper;
 import com.zhangbo.mapper.UserMapper;
 import com.zhangbo.mapper.VendorMapper;
-import com.zhangbo.pojo.TabApplication;
-import com.zhangbo.pojo.TabPurchase;
-import com.zhangbo.pojo.TabVendor;
-import com.zhangbo.pojo.User;
+import com.zhangbo.pojo.*;
 import com.zhangbo.service.PurchaseService;
 import com.zhangbo.until.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.apache.commons.lang.StringUtils;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public class PurchaseServiceimpl extends ServiceImpl<PurchaseMapper, TabPurchase> implements PurchaseService {
@@ -83,7 +77,7 @@ public class PurchaseServiceimpl extends ServiceImpl<PurchaseMapper, TabPurchase
     @Override
     public Result get_purchase_ContactList() {
         QueryWrapper<User> wrapper = new QueryWrapper<>();
-        wrapper.eq("user_type", "领导");
+        wrapper.eq("user_type", "项目负责人");
         List<User> list = userMapper.selectList(wrapper);
         return Result.resultFactory(Status.STATUS, list);
     }
@@ -159,5 +153,13 @@ public class PurchaseServiceimpl extends ServiceImpl<PurchaseMapper, TabPurchase
         wrapper.last("limit 0,10 ");
         List<TabPurchase> list =purchaseMapper.selectList(wrapper);
         return Result.resultFactory(Status.STATUS,list);
+    }
+
+    @Override
+    public Result find_purchaseById(String purchaseId) {
+        QueryWrapper<TabPurchase> wrapper=new QueryWrapper<>();
+        wrapper.eq("purchase_id",purchaseId);
+        TabPurchase purchase=purchaseMapper.selectOne(wrapper);
+        return Result.resultFactory(Status.SUCCESS,purchase);
     }
 }
