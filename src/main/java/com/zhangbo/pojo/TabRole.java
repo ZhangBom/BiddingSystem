@@ -1,11 +1,14 @@
 package com.zhangbo.pojo;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -24,5 +27,6 @@ public class TabRole {
   private long updateBy;
   private java.sql.Timestamp updateTime;
   private String remark;
-
+  @TableField(exist = false)
+  private List menus;
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.zhangbo.mapper.MenuMapper">
-<!--    查询角色权限-->
+<!--    查询用户权限-->
     <select id="selectPermsByUserId" resultType="java.lang.String">
         SELECT
             DISTINCT m.`perms`
@@ -15,4 +15,44 @@
           AND r.`status` = 0
           AND m.`status` = 0
     </select>
+
+    <select id="selectPermsByRoleId" resultType="com.zhangbo.pojo.Menu">
+        SELECT
+            DISTINCT m.`menu_name`,m.id
+        FROM
+            tab_role  r
+                LEFT JOIN `tab_role_menu` rm ON r.`id` = rm.`role_id`
+                LEFT JOIN `tab_menu` m ON m.`id` = rm.`menu_id`
+        WHERE
+            r.id = #{role_id}
+          AND r.`status` = 0
+          AND m.`status` = 0
+    </select>
+    <delete id="delete_role_menu">
+        DELETE
+        FROM
+            tab_role_menu
+        WHERE
+            role_id=#{role_id}
+    </delete>
+    <insert id="add_role">
+        INSERT INTO
+            tab_role(name,role_key)
+        values
+            (#{name},#{role_key})
+    </insert>
+    <select id="select_role_menu" resultType="java.lang.String">
+        SELECT
+            role_id
+          FROM
+              tab_user_role
+          WHERE
+              role_id=#{role_id}
+    </select>
+    <insert id="insert_role_menu">
+        INSERT INTO
+            tab_role_menu(role_id,menu_id)
+        values
+            (#{role_id},#{menu_id})
+    </insert>
 </mapper>
