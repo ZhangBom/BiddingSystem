@@ -37,9 +37,12 @@ public class ApplicationServiceImpl extends ServiceImpl<ApplicationMapper, TabAp
         tab_application.setPurchaseContact(purchase.getPurchaseContact());
         tab_application.setPurchasePhone(purchase.getPurchasePhone());
         tab_application.setPurchaseName(purchase.getPurchaseName());
+        tab_application.setPurchaseAccount(purchase.getPurchaseAccount());
         tab_application.setPurchaseExplain(purchase.getPurchaseExplain());
         String str=purchase.getPurchaseRegistrationDeadline().replaceAll("\\s*","");
+        //设置开标时间
         tab_application.setPurchaseBidsTime(dateDiff.DateWeekend(str));
+        //获取报名时间
         tab_application.setApplicationTime(dateDiff.getNow());
 
         QueryWrapper<TabApplication> wrapper=new QueryWrapper<>();
@@ -51,7 +54,6 @@ public class ApplicationServiceImpl extends ServiceImpl<ApplicationMapper, TabAp
             mail_path=GetUser.getuser().getUserEmail();
             mail_content="您已经报名参加我院"+purchase.getPurchaseName()+"项目的评标,开标时间为"+tab_application.getPurchaseBidsTime()
                     +"项目负责人:"+tab_application.getPurchaseContact()+"电话:"+tab_application.getPurchasePhone()+"请您准时参加，确保开标日能顺利评标";
-
 
             wrapper.like("expert_account",GetUser.getuserid());
         }else if(GetUser.getuser().getUserType().equals("供应商")){
@@ -99,9 +101,13 @@ public class ApplicationServiceImpl extends ServiceImpl<ApplicationMapper, TabAp
             wrapper.eq("vendor_account",user.getUserId());
         }else if(user.getUserType().equals("专家")){
             wrapper.eq("expert_account",user.getUserId());
-        }else if(user.getUserType().equals("管理员")) {
+        }else if(user.getUserType().equals("项目负责人")) {
             wrapper.eq("purchase_phone",user.getUserPhone());
+            wrapper.eq("vendor_account","");
+            wrapper.eq("expert_account","");
         }
+        //按时间排序
+        wrapper.orderByDesc("application_time");
         // 构造分页信息，其中的Page<>(page, PAGE_RECORDS_NUM)的第一个参数是当前页数（从第几页开始查），而第二个参数是每页的记录数（查多少条）
         Page<TabApplication> postPage = new Page<>(pageQuery.getCurrentPage(), pageQuery.getLimit());
 
@@ -166,11 +172,12 @@ public class ApplicationServiceImpl extends ServiceImpl<ApplicationMapper, TabAp
         BackPage<TabApplication> backPage=new BackPage<>();
         QueryWrapper<TabApplication> wrapper =new QueryWrapper<>();
         wrapper.eq("purchase_id",pageQuery.getPurchaseId());
-        if(GetUser.getuser().getUserType().equals("专家")) {
+//        if(GetUser.getuser().getUserType().equals("专家")) {
             wrapper.eq("expert_account", "expert_account");
-        }else {
-            wrapper.ne("expert_account", "expert_account");
-        }
+//        }
+//        else {
+//            wrapper.ne("expert_account", "expert_account");
+//        }
         wrapper.orderByDesc("vendor_score");
         // 构造分页信息，其中的Page<>(page, PAGE_RECORDS_NUM)的第一个参数是当前页数（从第几页开始查），而第二个参数是每页的记录数（查多少条）
         Page<TabApplication> postPage = new Page<>(pageQuery.getCurrentPage(), pageQuery.getLimit());
@@ -188,27 +195,62 @@ public class ApplicationServiceImpl extends ServiceImpl<ApplicationMapper, TabAp
     public Result sure_score(String purchase_id) {
         QueryWrapper<TabApplication> wrapper=new QueryWrapper<>();
         wrapper.eq("purchase_id",purchase_id);
+        wrapper.eq("expert_account","expert_account");
         wrapper.orderByDesc("vendor_score");
         List<TabApplication> list=applicationMapper.selectList(wrapper);
-        TabApplication application=list.get(0);
-        //获取中标供应商信息
-        TabVendor vendor=vendorMapper.selectById(application.getVendorId());
-        //发送中标通知
-        MailUtils.sendMail(vendor.getVendorEmail(),"恭喜您成为"+application.getPurchaseName()+"的中标供应商，请联系项目负责人商定合同签订事宜。","XX人民医院"+application.getPurchaseName());
-        //添加中标结果公告
-        TabArticle article=new TabArticle();
-        article.setArticleTitle(application.getPurchaseName()+"中标公告");
-        article.setArticleContent("<h1 style=\"text-align: center;\" >"+application.getPurchaseName()+"中标公告</h1> <p>项目名称："+application.getPurchaseName()+"</p> <p>项目编号："+application.getPurchaseId()
-                +"</p> <p>招&nbsp; 标 方：xx人民医院</p> <p>固定电话：01234567</p> <p>电子邮箱：xxxxxxx@gmail.com</p> <p>开标结果：已中标</p> <p>中标人："
-                +vendor.getVendorName()+"</p>  <p>&nbsp;</p> <p>&nbsp;</p>");
-        article.setArticleType("结果公告");
-        DateDiff dateDiff=new DateDiff();
-        article.setArticleTime(dateDiff.getNow());
-        articleMapper.insert(article);
-        TabPurchase purchase=purchaseMapper.selectOne(new LambdaQueryWrapper<TabPurchase>().eq(TabPurchase::getPurchaseId,purchase_id));
-        purchase.setPurchaseStatus("已结束");
-        purchaseMapper.updateById(purchase);
-        return Result.resultFactory(Status.PURCHASE_BIDDING_SUCCESS);
+        if(list.size()<3){
+            return Result.resultFactory(Status.DID_REJECTION);
+        }else {
+            TabApplication application = list.get(0);
+            //获取中标供应商信息
+            TabVendor vendor = vendorMapper.selectById(application.getVendorId());
+            //发送中标通知
+            MailUtils.sendMail(vendor.getVendorEmail(), "恭喜您成为" + application.getPurchaseName() + "的中标供应商，请联系项目负责人商定合同签订事宜。", "XX人民医院" + application.getPurchaseName());
+            //添加中标结果公告
+            TabArticle article = new TabArticle();
+            article.setArticleTitle(application.getPurchaseName() + "中标公告");
+            article.setArticleContent("<h1 style=\"text-align: center;\" >" + application.getPurchaseName() + "中标公告</h1> <p>项目名称：" + application.getPurchaseName() + "</p> <p>项目编号：" + application.getPurchaseId()
+                    + "</p> <p>招&nbsp; 标 方：xx人民医院</p> <p>固定电话：01234567</p> <p>电子邮箱：xxxxxxx@gmail.com</p> <p>开标结果：已中标</p> <p>中标人："
+                    + vendor.getVendorName() + "</p>  <p>&nbsp;</p> <p>&nbsp;</p>");
+            article.setArticleType("结果公告");
+            DateDiff dateDiff = new DateDiff();
+            article.setArticleTime(dateDiff.getNow());
+            articleMapper.insert(article);
+            TabPurchase purchase = purchaseMapper.selectOne(new LambdaQueryWrapper<TabPurchase>().eq(TabPurchase::getPurchaseId, purchase_id));
+            purchase.setPurchaseStatus("已结束");
+            purchaseMapper.updateById(purchase);
+            return Result.resultFactory(Status.PURCHASE_BIDDING_SUCCESS);
+        }
     }
 
+    @Override
+    public Result Did_rejection(String purchase_id) {
+        QueryWrapper<TabApplication> wrapper=new QueryWrapper<>();
+        wrapper.eq("purchase_id",purchase_id);
+        wrapper.eq("expert_account","expert_account");
+        wrapper.orderByDesc("vendor_score");
+        List<TabApplication> list=applicationMapper.selectList(wrapper);
+        if(list.size()<3){
+            //废标
+            TabApplication application = list.get(0);
+            //添加中标结果公告
+            TabArticle article = new TabArticle();
+            article.setArticleTitle(application.getPurchaseName() + "中标公告");
+            article.setArticleContent("<h1 style=\"text-align: center;\" >" + application.getPurchaseName() + "中标公告</h1> <p>项目名称：" + application.getPurchaseName() + "</p> <p>项目编号：" + application.getPurchaseId()
+                    + "</p> <p>招&nbsp; 标 方：xx人民医院</p> <p>固定电话：01234567</p> <p>电子邮箱：xxxxxxx@gmail.com</p> <p>开标结果：废标</p> <p>中标人：无"
+                    + "</p>  <p>&nbsp;</p> <p>&nbsp;</p>");
+            article.setArticleType("结果公告");
+            DateDiff dateDiff = new DateDiff();
+            article.setArticleTime(dateDiff.getNow());
+            articleMapper.insert(article);
+            TabPurchase purchase = purchaseMapper.selectOne(new LambdaQueryWrapper<TabPurchase>().eq(TabPurchase::getPurchaseId, purchase_id));
+            purchase.setPurchaseStatus("已结束");
+            purchaseMapper.updateById(purchase);
+            return Result.resultFactory(Status.PURCHASE_BIDDING_SUCCESS);
+        }else {
+            //判断项目是否违规
+//            是，废标
+            return Result.resultFactory(Status.DID_REJECTION);
+        }
+    }
 }

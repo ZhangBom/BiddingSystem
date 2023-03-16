@@ -36,4 +36,10 @@ public interface UserService {
     Result get_suggestion(PageQuery pageQuery);
 
     Result deal_Suggestion(TabSuggestion suggestion);
+
+    Result userCount();
+
+    Result suggestionCount();
+
+    Result get_user_moth_num();
 }

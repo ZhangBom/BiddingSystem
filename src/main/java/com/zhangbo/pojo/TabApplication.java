@@ -28,5 +28,6 @@ public class TabApplication {
   private String purchaseName;
   private String purchaseExplain;
   private String purchaseFilePath;
+  private String purchaseAccount;
   private int vendorScore;
 }

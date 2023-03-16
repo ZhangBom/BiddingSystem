@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.zhangbo.until.Result;
 import com.zhangbo.until.Status;
 import com.zhangbo.until.WebUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
@@ -17,7 +18,9 @@ import java.io.IOException;
 public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-        Result result =new Result(403,"用户名或密码错误",null);
+        System.out.println(authException);
+        System.out.println(response);
+        Result result= new Result(403, StringUtils.substringAfterLast(authException.toString(),": "), null);
         String json = JSON.toJSONString(result);
         WebUtils.renderString(response,json);
     }

@@ -32,4 +32,5 @@ public class TabPurchase {
     private String purchaseFile;
     private String purchaseStatus;
     private String purchaseEnd;
+    private String purchaseAccount;
 }

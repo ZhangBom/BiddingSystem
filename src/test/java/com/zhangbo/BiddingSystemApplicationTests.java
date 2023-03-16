@@ -1,8 +1,11 @@
 package com.zhangbo;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zhangbo.mapper.*;
 import com.zhangbo.pojo.*;
+import com.zhangbo.service.ApplicationService;
 import com.zhangbo.service.PurchaseService;
 import com.zhangbo.service.ScoreService;
 import com.zhangbo.service.UserService;
@@ -17,9 +20,13 @@ import java.util.Map;
 @SpringBootTest
 class BiddingSystemApplicationTests {
     @Autowired
-MenuMapper mapper;
+    ApplicationService applicationService;
+    @Autowired
+    private ApplicationMapper applicationMapper;
     @Test
     void text() {
-        System.out.println(mapper.select_role_menu(6));
+        System.out.println(applicationService.sure_score("1"));
+        //按时间排序
+
     }
 }

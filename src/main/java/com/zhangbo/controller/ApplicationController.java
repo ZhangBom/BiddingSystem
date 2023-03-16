@@ -5,6 +5,7 @@ import com.zhangbo.service.ApplicationService;
 import com.zhangbo.until.PageQuery;
 import com.zhangbo.until.Result;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -42,5 +43,9 @@ public class ApplicationController {
     @GetMapping("sure_score")
     public Result sure_score(@RequestParam("purchaseId") String purchase_id){
         return applicationService.sure_score(purchase_id);
+    }
+    @GetMapping("Did_rejection")
+    public Result Did_rejection(@RequestParam("purchaseId") String purchase_id){
+        return applicationService.Did_rejection(purchase_id);
     }
 }

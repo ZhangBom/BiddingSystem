@@ -75,5 +75,17 @@ public class UserController {
     public Result deal_Suggestion(@RequestBody TabSuggestion suggestion){
         return userService.deal_Suggestion(suggestion);
     }
+    @GetMapping("userCount")
+    public Result userCount(){
+        return userService.userCount();
+    }
+    @GetMapping("suggestionCount")
+    public Result suggestionCount(){
+        return userService.suggestionCount();
+    }
+    @GetMapping("get_user_moth_num")
+    public Result get_user_moth_num(){
+        return userService.get_user_moth_num();
+    }
 }
 

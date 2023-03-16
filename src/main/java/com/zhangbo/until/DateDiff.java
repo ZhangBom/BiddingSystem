@@ -37,7 +37,20 @@ public class DateDiff {
         int day = calendar.get(Calendar.DATE);//年份数值
         int hour=calendar.get(Calendar.HOUR);
         int minute=calendar.get(Calendar.MINUTE);
-        String DateTime=year+"年"+moth+"月"+day+"日"+hour+"时"+minute+"分";
+        String m= String.valueOf(moth),d= String.valueOf(day),h= String.valueOf(hour),mi= String.valueOf(minute);
+        if (moth<10){
+            m="0"+m;
+        }
+        if (day<10){
+            d="0"+d;
+        }
+        if (hour<10){
+            h="0"+h;
+        }
+        if (minute<10){
+            mi="0"+mi;
+        }
+        String DateTime=year+"年"+m+"月"+d+"日"+h+"时"+mi+"分";
         return DateTime;
     }
 }

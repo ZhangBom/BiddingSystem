@@ -18,7 +18,7 @@ public interface PurchaseService {
 
     Result purchase_file_upload(MultipartFile file,String purchase_id);
 
-    Result purchase_file_delete(String filePath);
+//    Result purchase_file_delete(String filePath);
 
     Result purchase_update(TabPurchase purchase);
 
@@ -28,5 +28,11 @@ public interface PurchaseService {
 
     Result find_purchaseById(String purchaseId);
 
-    Result get_my_purchase();
+    Result purchaseCount();
+
+    Result purchase_amount();
+
+    Result purchase_moth_amount();
+
+    Result get_purchase_moth_num();
 }

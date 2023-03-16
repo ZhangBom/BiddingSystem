@@ -23,7 +23,7 @@ public class ExpertServiceImpl extends ServiceImpl<ExpertMapper, TabExpert> impl
         BackPage<TabExpert> tabExpertBackPage = new BackPage<>();
         //构建查询条件
         QueryWrapper<TabExpert> wrapper = new QueryWrapper<>();
-        wrapper.eq("expert_status", "待审核");
+        wrapper.ne("expert_status", "审核通过");
         if (StringUtils.isNotEmpty(pageQuery.getConditions())) {
             HumpUntil humpUntil = new HumpUntil();
             wrapper.eq(humpUntil.hump_underline(pageQuery.getConditions()), pageQuery.getTitle());
@@ -44,7 +44,7 @@ public class ExpertServiceImpl extends ServiceImpl<ExpertMapper, TabExpert> impl
     @Override
     public Result expert_update(TabExpert expert) {
         updateById(expert);
-        return Result.resultFactory(Status.DELETE_INFO_SUCCESS);
+        return Result.resultFactory(Status.MODIFY_INFO_SUCCESS);
     }
     @Override
     public Result getInfo() {

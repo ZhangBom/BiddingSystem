@@ -6,6 +6,7 @@ import com.zhangbo.until.PageQuery;
 import com.zhangbo.until.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @CrossOrigin
 @ResponseBody
@@ -62,5 +63,10 @@ public class VendorController {
     @GetMapping("checkvendor")
     public Result checkvendor(){
         return vendorService.checkvendor();
+    }
+
+    @PostMapping("vendor_file_upload")
+    public Result vendor_file_upload(@RequestParam("file") MultipartFile file,@RequestParam("vendorId") String vendor_id){
+        return vendorService.vendor_file_upload(file,vendor_id);
     }
 }

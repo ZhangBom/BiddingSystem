@@ -9,6 +9,7 @@ import com.zhangbo.until.GetUser;
 import com.zhangbo.until.Result;
 import com.zhangbo.until.Status;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -21,5 +22,14 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, TabAdmin> impleme
         wrapper.eq("admin_id",GetUser.getuserid());
         TabAdmin admin=adminMapper.selectOne(wrapper);
         return Result.resultFactory(Status.STATUS,admin);
+    }
+
+    @Override
+    public Result register(TabAdmin admin) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String passHash = encoder.encode(admin.getAdminName()+"123");
+        admin.setAdminPass(passHash);
+        save(admin);
+        return Result.resultFactory(Status.OPERATION_SUCCESS);
     }
 }

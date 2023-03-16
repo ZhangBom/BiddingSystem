@@ -18,4 +18,6 @@ public interface ApplicationService {
     Result get_vendor_purchase_file(PageQuery pageQuery);
 
     Result sure_score(String purchase_id);
+
+    Result Did_rejection(String purchase_id);
 }

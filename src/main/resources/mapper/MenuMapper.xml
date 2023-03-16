@@ -4,16 +4,14 @@
 <!--    查询用户权限-->
     <select id="selectPermsByUserId" resultType="java.lang.String">
         SELECT
-            DISTINCT m.`perms`
+            DISTINCT r.`role_key`
         FROM
             tab_user_role ur
                 LEFT JOIN `tab_role` r ON ur.`role_id` = r.`id`
                 LEFT JOIN `tab_role_menu` rm ON ur.`role_id` = rm.`role_id`
-                LEFT JOIN `tab_menu` m ON m.`id` = rm.`menu_id`
         WHERE
             user_id = #{userid}
           AND r.`status` = 0
-          AND m.`status` = 0
     </select>
 
     <select id="selectPermsByRoleId" resultType="com.zhangbo.pojo.Menu">
@@ -41,11 +39,11 @@
         values
             (#{name},#{role_key})
     </insert>
-    <select id="select_role_menu" resultType="java.lang.String">
+    <select id="select_role_menu">
         SELECT
             role_id
           FROM
-              tab_user_role
+              tab_role_menu
           WHERE
               role_id=#{role_id}
     </select>

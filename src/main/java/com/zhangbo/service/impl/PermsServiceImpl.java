@@ -1,6 +1,7 @@
 package com.zhangbo.service.impl;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -53,24 +54,26 @@ public class PermsServiceImpl extends ServiceImpl<MenuMapper, Menu> implements P
 //            mapper.delete_role_menu(role.getId(), (Integer) i);
 //        }
         //查询角色与菜单关联表是否有记录，有则删除，重新插入权限信息
-        String role_id = mapper.select_role_menu(role.getId());
-        if (role_id == null) {
-            //循环menus存入表中
-            for (Object menu_id : role.getMenus()) {
-                mapper.insert_role_menu(role.getId(), (Integer) menu_id);
-            }
-        } else {
+        String role_id = String.valueOf(role.getId());
+//
+//        if (role_id == null) {
+//            //循环menus存入表中
+//            for (Object menu_id : role.getMenus()) {
+//                mapper.insert_role_menu(role.getId(), (Integer) menu_id);
+//            }
+//        } else {
             //删除表中该role_id权限，重新插入权限信息
             mapper.delete_role_menu(role_id);
             for (Object menu_id : role.getMenus()) {
                 mapper.insert_role_menu(role.getId(), (Integer) menu_id);
             }
-        }
+//        }
         return Result.resultFactory(Status.OPERATION_SUCCESS);
     }
 
     @Override
     public Result getMenu() {
+        QueryWrapper<Menu> wrapper=new QueryWrapper<>();
         List<Menu> menus = mapper.selectList(null);
         return Result.resultFactory(Status.SUCCESS, menus);
     }

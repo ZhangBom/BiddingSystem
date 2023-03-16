@@ -21,6 +21,7 @@ public class TabAdmin {
   private String employeesId;
   private String employeesName;
   private String employeesEmail;
-
+  private String adminType;
+  private String adminPass;
 
 }

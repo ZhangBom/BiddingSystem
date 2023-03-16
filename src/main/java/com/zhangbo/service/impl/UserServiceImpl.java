@@ -14,7 +14,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.parameters.P;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.zhangbo.mapper.UserMapper;
@@ -22,8 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.zhangbo.until.CodeKey;
 import com.zhangbo.until.GetUser;
 
-import java.util.HashMap;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -149,7 +148,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         QueryWrapper<User> wrapper = new QueryWrapper<>();
         if (StringUtils.isNotEmpty(pageQuery.getConditions())) {
 
-            wrapper.eq(humpUntil.hump_underline(pageQuery.getConditions()), pageQuery.getTitle());
+            wrapper.like(humpUntil.hump_underline(pageQuery.getConditions()), pageQuery.getTitle());
         }
         if (StringUtils.isNotEmpty(pageQuery.getUsertype())) {
             wrapper.eq("user_type", pageQuery.getUsertype());
@@ -182,6 +181,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public Result banuser(User user) {
         updateById(user);
+
         return Result.resultFactory(Status.OPERATION_SUCCESS);
     }
 
@@ -245,15 +245,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (params.getCheckcode().equals(redisCache.getCacheObject(redisKey))) {
             //取出redis中的用户信息
             String redisuserKey = "user:" + GetUser.getuserid();
-           User user=userMapper.selectById(GetUser.getuserid());
-           user.setUserEmail(params.getUserEmail());
-           user.setUserContactName(params.getUserName());
-           user.setUserPhone(params.getUserPhone());
-           user.setUserContactName(params.getUserName());
-           updateById(user);
-            LoginUser loginUser=redisCache.getCacheObject(redisuserKey);
+            User user = userMapper.selectById(GetUser.getuserid());
+            user.setUserEmail(params.getUserEmail());
+            user.setUserContactName(params.getUserName());
+            user.setUserPhone(params.getUserPhone());
+            user.setUserContactName(params.getUserName());
+            updateById(user);
+            LoginUser loginUser = redisCache.getCacheObject(redisuserKey);
             loginUser.setUser(user);
-            redisCache.setCacheObject(redisuserKey,loginUser,60 * 60 * 24, TimeUnit.SECONDS);
+            redisCache.setCacheObject(redisuserKey, loginUser, 60 * 60 * 24, TimeUnit.SECONDS);
             return Result.resultFactory(Status.MODIFY_INFO_SUCCESS);
         } else {
             return Result.resultFactory(Status.CHECKED_ERROR);
@@ -262,10 +262,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public Result suggestion(String textarea) {
-        TabSuggestion tabSuggestion=new TabSuggestion();
+        TabSuggestion tabSuggestion = new TabSuggestion();
         tabSuggestion.setContent(textarea);
         tabSuggestion.setUserId(GetUser.getuserid());
-        DateDiff dateDiff=new DateDiff();
+        DateDiff dateDiff = new DateDiff();
         tabSuggestion.setSuggestionTime(dateDiff.getNow());
         tabSuggestion.setStatus("未处理");
         suggestionMapper.insert(tabSuggestion);
@@ -294,12 +294,41 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public Result deal_Suggestion(TabSuggestion suggestion) {
         suggestion.setStatus("已处理");
-        MailUtils.sendMail(suggestion.getUserId(),"您的反馈我们已经处理，请前往投诉处理公告处查看处理详情","xx人民医院");
+        MailUtils.sendMail(suggestion.getUserId(), "您的反馈我们已经处理，请前往投诉处理公告处查看处理详情", "xx人民医院");
         suggestionMapper.updateById(suggestion);
         return Result.resultFactory(Status.OPERATION_SUCCESS);
     }
 
+    @Override
+    public Result userCount() {
+        return Result.resultFactory(Status.SUCCESS, userMapper.selectCount(null));
+    }
 
+    @Override
+    public Result suggestionCount() {
+        return Result.resultFactory(Status.SUCCESS, suggestionMapper.selectCount(null));
+    }
+
+    @Override
+    public Result get_user_moth_num() {
+        List<Map<String,Object>> moth_amount=new ArrayList<>();
+        for(int i=1; i<=12; i++){
+            moth_amount.add(amount(i));
+        }
+        return Result.resultFactory(Status.SUCCESS,moth_amount);
+    }
+    public Map<String, Object> amount(int index){
+        QueryWrapper<User> wrapper=new QueryWrapper<>();
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        wrapper.select("count(*) as user_num");
+        if(index<10){
+            wrapper.like("user_register_time",year+"-0"+index);
+        }else {
+            wrapper.like("user_register_time", year + "-" + index);
+        }
+        return userMapper.selectMaps(wrapper).get(0);
+    }
     /**
      * 检查用名是否存在
      */

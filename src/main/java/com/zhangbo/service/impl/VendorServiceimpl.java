@@ -1,5 +1,6 @@
 package com.zhangbo.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -7,6 +8,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zhangbo.mapper.ExpertMapper;
 import com.zhangbo.mapper.VendorMapper;
 import com.zhangbo.pojo.TabExpert;
+import com.zhangbo.pojo.TabPurchase;
 import com.zhangbo.pojo.User;
 import com.zhangbo.until.BackPage;
 import com.zhangbo.until.PageQuery;
@@ -16,9 +18,11 @@ import com.zhangbo.until.*;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.jws.soap.SOAPBinding;
 import java.util.List;
+import java.util.Objects;
 
 
 @Service
@@ -35,7 +39,7 @@ public class VendorServiceimpl extends ServiceImpl<VendorMapper, TabVendor> impl
         BackPage<TabVendor> tableVendorBackPage = new BackPage<>();
         //构建查询条件
         QueryWrapper<TabVendor> wrapper = new QueryWrapper<>();
-        wrapper.eq("vendor_status", "待审核");
+        wrapper.ne("vendor_status", "审核通过");
         if (StringUtils.isNotEmpty(pageQuery.getConditions())) {
             HumpUntil humpUntil = new HumpUntil();
             wrapper.eq(humpUntil.hump_underline(pageQuery.getConditions()), pageQuery.getTitle());
@@ -78,7 +82,7 @@ public class VendorServiceimpl extends ServiceImpl<VendorMapper, TabVendor> impl
     @Override
     public Result vendor_update(TabVendor vendor) {
         updateById(vendor);
-        return Result.resultFactory(Status.DELETE_INFO_SUCCESS);
+        return Result.resultFactory(Status.MODIFY_INFO_SUCCESS);
     }
 
     @Override
@@ -114,6 +118,32 @@ public class VendorServiceimpl extends ServiceImpl<VendorMapper, TabVendor> impl
             }
         } else {
             return Result.resultFactory(Status.SIGN_PURCHASE_FAIL, false);
+        }
+    }
+
+    @Override
+    public Result vendor_file_upload(MultipartFile file, String vendor_id) {
+        //查询该项目
+        TabVendor vendor = vendorMapper.selectOne(new LambdaQueryWrapper<TabVendor>().eq(TabVendor::getVendorId, vendor_id));
+//是否已有相关文件
+        if (vendor.getVendorAptitude().equals("未上传")) {
+            //  否,上传文件 返回地址
+            String filepath = COSUtil.uploadfile(file, VENDORFILE);
+            //  将地址更新
+            vendor.setVendorAptitude(filepath);
+            updateById(vendor);
+            return Result.resultFactory(Status.SUBMIT_SUCCESS);
+        } else {
+            //是 获取文件地址删除文件，重新上传，返回新地址
+            if (COSUtil.deletefile(vendor.getVendorAptitude())) {
+                String filepath = COSUtil.uploadfile(file, VENDORFILE);
+                //  将地址更新
+                vendor.setVendorAptitude(filepath);
+                updateById(vendor);
+                return Result.resultFactory(Status.SUBMIT_SUCCESS);
+            } else {
+                return Result.resultFactory(Status.SERVER_FAIL);
+            }
         }
     }
 }

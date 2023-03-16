@@ -27,4 +27,5 @@ public class User implements Serializable {
     private String userStatus;
     private String userContactName;
     private String userImage;
+    private String userRegisterTime;
 }
