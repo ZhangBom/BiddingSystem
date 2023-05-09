@@ -18,5 +18,6 @@ public class TabArticle {
   private String articleContent;
   private String articleTime;
   private String articleType;
+  private String articleRecord;
 
 }

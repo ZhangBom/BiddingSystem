@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zhangbo.mapper.RecordMapper;
 import com.zhangbo.mapper.SuggestionMapper;
 import com.zhangbo.pojo.*;
 import com.zhangbo.service.UserService;
@@ -37,6 +38,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private UserMapper userMapper;
     @Autowired
     private SuggestionMapper suggestionMapper;
+    @Autowired
+    private RecordMapper recordMapper;
 
     //头像文件夹
     private static final String IMAGEFILE = "/avatar/";
@@ -242,7 +245,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public Result user_update(Params params) {
         //匹配验证码
         String redisKey = "code:" + GetUser.getuserid();
-        if (params.getCheckcode().equals(redisCache.getCacheObject(redisKey))) {
+        if (params.getCheckcode().equals(redisCache.getCacheObject(redisKey))|| GetUser.getuser().getUserType().equals("管理员")) {
             //取出redis中的用户信息
             String redisuserKey = "user:" + GetUser.getuserid();
             User user = userMapper.selectById(GetUser.getuserid());
@@ -251,6 +254,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             user.setUserPhone(params.getUserPhone());
             user.setUserContactName(params.getUserName());
             updateById(user);
+            TabRecord record=new TabRecord();
+            if(GetUser.getuser().getUserType().equals("管理员")){
+                record.setRecordType("账号管理");
+                record.setRecordOperator(GetUser.getuser().getUserContactName());
+                record.setRecordId("user:"+user.getUserId());
+                Calendar calendar = Calendar.getInstance();
+                record.setRecordUpdateTime(String.valueOf(calendar.getTime()));
+            }
+            recordMapper.insert(record);
             LoginUser loginUser = redisCache.getCacheObject(redisuserKey);
             loginUser.setUser(user);
             redisCache.setCacheObject(redisuserKey, loginUser, 60 * 60 * 24, TimeUnit.SECONDS);
@@ -298,17 +310,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         suggestionMapper.updateById(suggestion);
         return Result.resultFactory(Status.OPERATION_SUCCESS);
     }
-
     @Override
     public Result userCount() {
         return Result.resultFactory(Status.SUCCESS, userMapper.selectCount(null));
     }
-
     @Override
     public Result suggestionCount() {
         return Result.resultFactory(Status.SUCCESS, suggestionMapper.selectCount(null));
     }
-
     @Override
     public Result get_user_moth_num() {
         List<Map<String,Object>> moth_amount=new ArrayList<>();

@@ -6,18 +6,18 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zhangbo.mapper.MenuMapper;
+import com.zhangbo.mapper.RecordMapper;
 import com.zhangbo.mapper.RoleMapper;
 import com.zhangbo.pojo.Menu;
+import com.zhangbo.pojo.TabRecord;
 import com.zhangbo.pojo.TabRole;
 import com.zhangbo.service.PermsService;
-import com.zhangbo.until.BackPage;
-import com.zhangbo.until.PageQuery;
-import com.zhangbo.until.Result;
-import com.zhangbo.until.Status;
+import com.zhangbo.until.*;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Calendar;
 import java.util.List;
 
 
@@ -27,6 +27,8 @@ public class PermsServiceImpl extends ServiceImpl<MenuMapper, Menu> implements P
     private MenuMapper mapper;
     @Autowired
     private RoleMapper roleMapper;
+    @Autowired
+    private RecordMapper recordMapper;
 
     @Override
     public Result role_findAll(PageQuery pageQuery) {
@@ -68,6 +70,13 @@ public class PermsServiceImpl extends ServiceImpl<MenuMapper, Menu> implements P
                 mapper.insert_role_menu(role.getId(), (Integer) menu_id);
             }
 //        }
+        TabRecord record=new TabRecord();
+        record.setRecordType("权限修改");
+        record.setRecordOperator(GetUser.getuser().getUserContactName());
+        record.setRecordId("role:"+role_id);
+        Calendar calendar = Calendar.getInstance();
+        record.setRecordUpdateTime(String.valueOf(calendar.getTime()));
+        recordMapper.insert(record);
         return Result.resultFactory(Status.OPERATION_SUCCESS);
     }
 
@@ -81,6 +90,6 @@ public class PermsServiceImpl extends ServiceImpl<MenuMapper, Menu> implements P
     @Override
     public Result addRole(TabRole role) {
         mapper.add_role(role.getName(), role.getRoleKey());
-        return null;
+        return Result.resultFactory(Status.SUCCESS);
     }
 }

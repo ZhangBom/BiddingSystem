@@ -5,4 +5,5 @@ import com.zhangbo.pojo.TabRecord;
 
 
 public interface RecordMapper extends BaseMapper<TabRecord> {
+
 }

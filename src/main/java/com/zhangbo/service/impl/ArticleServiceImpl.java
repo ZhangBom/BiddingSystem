@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zhangbo.mapper.ApplicationMapper;
 import com.zhangbo.mapper.ArticleMapper;
+import com.zhangbo.mapper.RecordMapper;
+import com.zhangbo.pojo.TabRecord;
 import com.zhangbo.until.BackPage;
 import com.zhangbo.until.PageQuery;
 import com.zhangbo.pojo.TabArticle;
@@ -16,18 +18,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Calendar;
 import java.util.List;
 
 @Service
 public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, TabArticle> implements ArticleService {
     @Autowired
     private ArticleMapper articleMapper;
+    @Autowired
+    private RecordMapper recordMapper;
     private static final String IMAGEFILE = "/image/";
     @Override
     public Result article_add(TabArticle article) {
         //获取当前时间
         DateDiff dateDiff=new DateDiff();
         article.setArticleTime(dateDiff.getNow());
+        article.setArticleRecord(GetUser.getuser().getUserContactName());
         save(article);
         return Result.resultFactory(Status.ADD_INFO_SUCCESS);
     }

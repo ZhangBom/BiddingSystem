@@ -143,20 +143,20 @@ public class PurchaseServiceimpl extends ServiceImpl<PurchaseMapper, TabPurchase
 
     @Override
     public Result purchase_update(TabPurchase purchase) {
-        TabRecord record=new TabRecord();
-        record.setRecordOperator(GetUser.getuser().getUserContactName());
-        record.setRecordId("purchase:"+purchase.getPurchaseId());
-        Calendar calendar = Calendar.getInstance();
-        record.setRecordUpdateTime(String.valueOf(calendar.getTime()));
+
         //查询该项目
         TabPurchase tabPurchase = purchaseMapper.selectOne(new LambdaQueryWrapper<TabPurchase>().eq(TabPurchase::getPurchaseId, purchase.getPurchaseId()));
         //操作人是否有该项目权限（否，直接返回，是，继续操作）
         if (tabPurchase.getPurchasePhone().equals(GetUser.getuser().getUserPhone())||GetUser.getuser().getUserType().equals("管理员")) {
             updateById(purchase);
             //向操作记录表添加记录
-
+            TabRecord record=new TabRecord();
             if(purchase.getPurchaseStatus().equals("审核通过") || purchase.getPurchaseStatus().equals("审核未通过")){
                 record.setRecordType("采购项目审核");
+                record.setRecordOperator(GetUser.getuser().getUserContactName());
+                record.setRecordId("purchase:"+purchase.getPurchaseId());
+                Calendar calendar = Calendar.getInstance();
+                record.setRecordUpdateTime(String.valueOf(calendar.getTime()));
             }else {
                 record.setRecordType("更新");
             }
