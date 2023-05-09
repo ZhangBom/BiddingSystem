@@ -215,6 +215,7 @@ public class ApplicationServiceImpl extends ServiceImpl<ApplicationMapper, TabAp
             article.setArticleType("结果公告");
             DateDiff dateDiff = new DateDiff();
             article.setArticleTime(dateDiff.getNow());
+            article.setArticleRecord("自动生成");
             articleMapper.insert(article);
             TabPurchase purchase = purchaseMapper.selectOne(new LambdaQueryWrapper<TabPurchase>().eq(TabPurchase::getPurchaseId, purchase_id));
             purchase.setPurchaseStatus("已结束");
@@ -240,6 +241,7 @@ public class ApplicationServiceImpl extends ServiceImpl<ApplicationMapper, TabAp
                     + "</p> <p>招&nbsp; 标 方：xx人民医院</p> <p>固定电话：01234567</p> <p>电子邮箱：xxxxxxx@gmail.com</p> <p>开标结果：废标</p> <p>中标人：无"
                     + "</p>  <p>&nbsp;</p> <p>&nbsp;</p>");
             article.setArticleType("结果公告");
+            article.setArticleRecord("自动生成");
             DateDiff dateDiff = new DateDiff();
             article.setArticleTime(dateDiff.getNow());
             articleMapper.insert(article);
