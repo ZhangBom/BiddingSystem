@@ -183,9 +183,27 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public Result banuser(User user) {
-        updateById(user);
-
-        return Result.resultFactory(Status.OPERATION_SUCCESS);
+        if (GetUser.getuser().getUserType().equals("管理员")) {
+            updateById(user);
+            TabRecord record = new TabRecord();
+            record.setRecordType("账号管理");
+            record.setRecordOperator(GetUser.getuser().getUserContactName());
+            record.setRecordId("user:" + user.getUserId());
+            Calendar calendar = Calendar.getInstance();
+            record.setRecordUpdateTime(String.valueOf(calendar.getTime()));
+            recordMapper.insert(record);
+            if (user.getUserStatus().equals("1")){
+                //判断用户是否在线
+                String redisKey = "user:" + user.getUserId();
+                LoginUser loginUser = redisCache.getCacheObject(redisKey);
+                if (!Objects.isNull(loginUser)) {
+                    redisCache.deleteObject(redisKey);
+                }
+            }
+            return Result.resultFactory(Status.OPERATION_SUCCESS);
+        } else {
+            return Result.resultFactory(Status.LOW_POWER_ADMIN);
+        }
     }
 
     @Override
@@ -245,7 +263,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public Result user_update(Params params) {
         //匹配验证码
         String redisKey = "code:" + GetUser.getuserid();
-        if (params.getCheckcode().equals(redisCache.getCacheObject(redisKey))|| GetUser.getuser().getUserType().equals("管理员")) {
+        if (params.getCheckcode().equals(redisCache.getCacheObject(redisKey))) {
             //取出redis中的用户信息
             String redisuserKey = "user:" + GetUser.getuserid();
             User user = userMapper.selectById(GetUser.getuserid());
@@ -254,15 +272,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             user.setUserPhone(params.getUserPhone());
             user.setUserContactName(params.getUserName());
             updateById(user);
-            TabRecord record=new TabRecord();
-            if(GetUser.getuser().getUserType().equals("管理员")){
-                record.setRecordType("账号管理");
-                record.setRecordOperator(GetUser.getuser().getUserContactName());
-                record.setRecordId("user:"+user.getUserId());
-                Calendar calendar = Calendar.getInstance();
-                record.setRecordUpdateTime(String.valueOf(calendar.getTime()));
-            }
-            recordMapper.insert(record);
             LoginUser loginUser = redisCache.getCacheObject(redisuserKey);
             loginUser.setUser(user);
             redisCache.setCacheObject(redisuserKey, loginUser, 60 * 60 * 24, TimeUnit.SECONDS);
@@ -310,34 +319,39 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         suggestionMapper.updateById(suggestion);
         return Result.resultFactory(Status.OPERATION_SUCCESS);
     }
+
     @Override
     public Result userCount() {
         return Result.resultFactory(Status.SUCCESS, userMapper.selectCount(null));
     }
+
     @Override
     public Result suggestionCount() {
         return Result.resultFactory(Status.SUCCESS, suggestionMapper.selectCount(null));
     }
+
     @Override
     public Result get_user_moth_num() {
-        List<Map<String,Object>> moth_amount=new ArrayList<>();
-        for(int i=1; i<=12; i++){
+        List<Map<String, Object>> moth_amount = new ArrayList<>();
+        for (int i = 1; i <= 12; i++) {
             moth_amount.add(amount(i));
         }
-        return Result.resultFactory(Status.SUCCESS,moth_amount);
+        return Result.resultFactory(Status.SUCCESS, moth_amount);
     }
-    public Map<String, Object> amount(int index){
-        QueryWrapper<User> wrapper=new QueryWrapper<>();
+
+    public Map<String, Object> amount(int index) {
+        QueryWrapper<User> wrapper = new QueryWrapper<>();
         Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
         wrapper.select("count(*) as user_num");
-        if(index<10){
-            wrapper.like("user_register_time",year+"-0"+index);
-        }else {
+        if (index < 10) {
+            wrapper.like("user_register_time", year + "-0" + index);
+        } else {
             wrapper.like("user_register_time", year + "-" + index);
         }
         return userMapper.selectMaps(wrapper).get(0);
     }
+
     /**
      * 检查用名是否存在
      */
