@@ -13,6 +13,7 @@ import com.zhangbo.until.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.List;
 import java.util.Map;
@@ -20,13 +21,13 @@ import java.util.Map;
 @SpringBootTest
 class BiddingSystemApplicationTests {
     @Autowired
-    ApplicationService applicationService;
-    @Autowired
-    private ApplicationMapper applicationMapper;
+    PurchaseService purchaseService;
+
     @Test
     void text() {
-        System.out.println(applicationService.sure_score("1"));
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String passHash = encoder.encode("zhangsan123");
+        System.out.println(passHash);
         //按时间排序
-
     }
 }

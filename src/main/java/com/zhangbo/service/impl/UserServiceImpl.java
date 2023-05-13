@@ -98,7 +98,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 if (check_email(user)) {//检查邮箱是否已经注册
                     user.setUserPassword(passwordEncoder.encode(user.getUserPassword()));//密码加密
                     //设置用户状态为待审核
-                    user.setUserStatus("待审核");
+                    user.setUserStatus("0");
+                    DateDiff dateDiff=new DateDiff();
+                    user.setUserRegisterTime(dateDiff.getNowhhhh());
                     save(user);
                     return Result.resultFactory(Status.REGISTER_SUCCESS, user);
                 } else {

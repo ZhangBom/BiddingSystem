@@ -8,8 +8,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zhangbo.mapper.ExpertMapper;
 import com.zhangbo.mapper.VendorMapper;
 import com.zhangbo.pojo.TabExpert;
-import com.zhangbo.pojo.TabPurchase;
-import com.zhangbo.pojo.User;
 import com.zhangbo.until.BackPage;
 import com.zhangbo.until.PageQuery;
 import com.zhangbo.pojo.TabVendor;
@@ -20,13 +18,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.jws.soap.SOAPBinding;
 import java.util.List;
-import java.util.Objects;
 
 
 @Service
-public class VendorServiceimpl extends ServiceImpl<VendorMapper, TabVendor> implements VendorService {
+public class VendorServiceImpl extends ServiceImpl<VendorMapper, TabVendor> implements VendorService {
     @Autowired
     private VendorMapper vendorMapper;
     @Autowired
@@ -92,7 +88,7 @@ public class VendorServiceimpl extends ServiceImpl<VendorMapper, TabVendor> impl
         TabVendor vendor = vendorMapper.selectOne(wrapper);
         return Result.resultFactory(Status.SUCCESS, vendor);
     }
-
+    //用于前台报名时验证用户所在公司是否通过资质审核
     @Override
     public Result checkvendor() {
         //获取报名用户id，查询供应商
@@ -104,7 +100,7 @@ public class VendorServiceimpl extends ServiceImpl<VendorMapper, TabVendor> impl
             if (vendor.getVendorAccountStatus().equals("0") && vendor.getVendorStatus().equals("审核通过")) {
                 return Result.resultFactory(Status.SUCCESS, true);
             } else {
-                return Result.resultFactory(Status.SIGN_PURCHASE_FAIL, false);
+                return Result.resultFactory(Status.SIGN_AUDIT_FAIL, false);
             }
         } else if (GetUser.getuser().getUserType().equals("专家")) {
             QueryWrapper<TabExpert> wrapper = new QueryWrapper<>();
@@ -114,10 +110,10 @@ public class VendorServiceimpl extends ServiceImpl<VendorMapper, TabVendor> impl
             if (expert.getExpertAccountStatus().equals("0") && expert.getExpertStatus().equals("审核通过")) {
                 return Result.resultFactory(Status.SUCCESS, true);
             } else {
-                return Result.resultFactory(Status.SIGN_PURCHASE_FAIL, false);
+                return Result.resultFactory(Status.SIGN_AUDIT_FAIL, false);
             }
         } else {
-            return Result.resultFactory(Status.SIGN_PURCHASE_FAIL, false);
+            return Result.resultFactory(Status.SIGN_AUDIT_FAIL, false);
         }
     }
 

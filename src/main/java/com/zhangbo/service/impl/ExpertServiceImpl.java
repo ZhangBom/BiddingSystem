@@ -14,6 +14,10 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
+
 @Service
 public class ExpertServiceImpl extends ServiceImpl<ExpertMapper, TabExpert> implements ExpertService {
     @Autowired
@@ -44,6 +48,27 @@ public class ExpertServiceImpl extends ServiceImpl<ExpertMapper, TabExpert> impl
     @Override
     public Result expert_update(TabExpert expert) {
         updateById(expert);
+       TabExpert expert1 = expertMapper.selectById(expert.getExpertId());
+        try{
+            //通过getDeclaredFields()方法获取对象类中的所有属性（含私有）
+            java.lang.reflect.Field[] fields = expert1.getClass().getDeclaredFields();
+            for (Field field : fields) {
+                //设置允许通过反射访问私有变量
+                field.setAccessible(true);
+                //获取字段的值
+                String value = field.get(expert1).toString();
+                //其他自定义操作
+                if (value== null||value==" "|| value=="null"){
+                    break;
+                }
+            }
+        }
+        catch (Exception ex){
+            //出异常表示有空值处理异常
+            expert1.setExpertStatus("未完善信息");
+            updateById(expert1);
+            return Result.resultFactory(Status.MODIFY_INFO_SUCCESS);
+        }
         return Result.resultFactory(Status.MODIFY_INFO_SUCCESS);
     }
     @Override

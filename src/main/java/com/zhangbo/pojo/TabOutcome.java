@@ -1,97 +1,26 @@
 package com.zhangbo.pojo;
 
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString
+@TableName("tab_outcome")
 public class TabOutcome {
-
-  private long purchaseId;
+  @TableId
+  private String purchaseId;
   private String purchaseName;
+  private String purchaseContract;
   private String purchaseTenderer;
   private String purchaseTenderMethod;
-  private String purchaseOutcome;
   private String purchaseCompanyName;
-  private String purchaseContact;
-  private String purchasePhone;
-  private String purchaseEmail;
-
-
-  public long getPurchaseId() {
-    return purchaseId;
-  }
-
-  public void setPurchaseId(long purchaseId) {
-    this.purchaseId = purchaseId;
-  }
-
-
-  public String getPurchaseName() {
-    return purchaseName;
-  }
-
-  public void setPurchaseName(String purchaseName) {
-    this.purchaseName = purchaseName;
-  }
-
-
-  public String getPurchaseTenderer() {
-    return purchaseTenderer;
-  }
-
-  public void setPurchaseTenderer(String purchaseTenderer) {
-    this.purchaseTenderer = purchaseTenderer;
-  }
-
-
-  public String getPurchaseTenderMethod() {
-    return purchaseTenderMethod;
-  }
-
-  public void setPurchaseTenderMethod(String purchaseTenderMethod) {
-    this.purchaseTenderMethod = purchaseTenderMethod;
-  }
-
-
-  public String getPurchaseOutcome() {
-    return purchaseOutcome;
-  }
-
-  public void setPurchaseOutcome(String purchaseOutcome) {
-    this.purchaseOutcome = purchaseOutcome;
-  }
-
-
-  public String getPurchaseCompanyName() {
-    return purchaseCompanyName;
-  }
-
-  public void setPurchaseCompanyName(String purchaseCompanyName) {
-    this.purchaseCompanyName = purchaseCompanyName;
-  }
-
-
-  public String getPurchaseContact() {
-    return purchaseContact;
-  }
-
-  public void setPurchaseContact(String purchaseContact) {
-    this.purchaseContact = purchaseContact;
-  }
-
-
-  public String getPurchasePhone() {
-    return purchasePhone;
-  }
-
-  public void setPurchasePhone(String purchasePhone) {
-    this.purchasePhone = purchasePhone;
-  }
-
-
-  public String getPurchaseEmail() {
-    return purchaseEmail;
-  }
-
-  public void setPurchaseEmail(String purchaseEmail) {
-    this.purchaseEmail = purchaseEmail;
-  }
-
+  private String purchaseVendorContact;
+  private String purchaseVendorPhone;
+  private String purchaseVendorEmail;
 }

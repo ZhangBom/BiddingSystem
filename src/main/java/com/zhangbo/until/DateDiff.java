@@ -53,4 +53,31 @@ public class DateDiff {
         String DateTime=year+"年"+m+"月"+d+"日"+h+"时"+mi+"分";
         return DateTime;
     }
+    public String getNowhhhh(){
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);//年份数值
+        int moth = calendar.get(Calendar.MONTH)+1;//年份数值
+        int day = calendar.get(Calendar.DATE);//年份数值
+        int hour=calendar.get(Calendar.HOUR);
+        int minute=calendar.get(Calendar.MINUTE);
+        int second=calendar.get(Calendar.SECOND);
+        String m= String.valueOf(moth),d= String.valueOf(day),h= String.valueOf(hour),mi= String.valueOf(minute),sec=String.valueOf(second);
+        if (moth<10){
+            m="0"+m;
+        }
+        if (day<10){
+            d="0"+d;
+        }
+        if (hour<10){
+            h="0"+h;
+        }
+        if (minute<10){
+            mi="0"+mi;
+        }
+        if (second<10){
+            sec="0"+sec;
+        }
+        String DateTime=year+"-"+m+"-"+d+" "+h+":"+mi+":"+sec;
+        return DateTime;
+    }
 }

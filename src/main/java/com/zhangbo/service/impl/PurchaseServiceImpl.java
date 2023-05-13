@@ -9,21 +9,18 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zhangbo.mapper.PurchaseMapper;
 import com.zhangbo.mapper.RecordMapper;
 import com.zhangbo.mapper.UserMapper;
-import com.zhangbo.mapper.VendorMapper;
 import com.zhangbo.pojo.*;
 import com.zhangbo.service.PurchaseService;
 import com.zhangbo.until.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 
 @Service
-public class PurchaseServiceimpl extends ServiceImpl<PurchaseMapper, TabPurchase> implements PurchaseService {
+public class PurchaseServiceImpl extends ServiceImpl<PurchaseMapper, TabPurchase> implements PurchaseService {
 
 
     @Autowired
@@ -39,12 +36,11 @@ public class PurchaseServiceimpl extends ServiceImpl<PurchaseMapper, TabPurchase
 
     @Override
     public Result findAll(PageQuery pageQuery) {
-
         BackPage<TabPurchase> tabPurchaseBackPage = new BackPage<>();
         //构建查询条件
         QueryWrapper<TabPurchase> wrapper = new QueryWrapper<>();
         if (StringUtils.isNotEmpty(pageQuery.getConditions())) {
-            if(pageQuery.getConditions().equals("purchaseAccount")){
+            if (pageQuery.getConditions().equals("purchaseAccount")) {
                 pageQuery.setTitle(GetUser.getuser().getUserId());
             }
             HumpUntil humpUntil = new HumpUntil();
@@ -52,7 +48,7 @@ public class PurchaseServiceimpl extends ServiceImpl<PurchaseMapper, TabPurchase
         }
         //是否为审核页面发起的请求，是：添加条件
         if (pageQuery.getAudit().equals("true")) {
-            wrapper.eq("purchase_status", "待审核");
+            wrapper.ne("purchase_status", "审核通过");
         } else if (pageQuery.getAudit().equals("auditAccess")) {
             wrapper.eq("purchase_status", "审核通过");
         }
@@ -132,32 +128,22 @@ public class PurchaseServiceimpl extends ServiceImpl<PurchaseMapper, TabPurchase
         }
     }
 
-//    @Override
-//    public Result purchase_file_delete(String filePath) {
-//        if (COSUtil.deletefile(filePath)) {
-//            return Result.resultFactory(Status.SUBMIT_SUCCESS);
-//        } else {
-//            return Result.resultFactory(Status.SERVER_FAIL);
-//        }
-//    }
-
     @Override
     public Result purchase_update(TabPurchase purchase) {
-
         //查询该项目
         TabPurchase tabPurchase = purchaseMapper.selectOne(new LambdaQueryWrapper<TabPurchase>().eq(TabPurchase::getPurchaseId, purchase.getPurchaseId()));
         //操作人是否有该项目权限（否，直接返回，是，继续操作）
-        if (tabPurchase.getPurchasePhone().equals(GetUser.getuser().getUserPhone())||GetUser.getuser().getUserType().equals("管理员")) {
+        if (tabPurchase.getPurchasePhone().equals(GetUser.getuser().getUserPhone()) || GetUser.getuser().getUserType().equals("管理员")) {
             updateById(purchase);
             //向操作记录表添加记录
-            TabRecord record=new TabRecord();
-            if(purchase.getPurchaseStatus().equals("审核通过") || purchase.getPurchaseStatus().equals("审核未通过")){
+            TabRecord record = new TabRecord();
+            if (purchase.getPurchaseStatus().equals("审核通过") || purchase.getPurchaseStatus().equals("审核未通过")) {
                 record.setRecordType("采购项目审核");
                 record.setRecordOperator(GetUser.getuser().getUserContactName());
-                record.setRecordId("purchase:"+purchase.getPurchaseId());
+                record.setRecordId("purchase:" + purchase.getPurchaseId());
                 Calendar calendar = Calendar.getInstance();
                 record.setRecordUpdateTime(String.valueOf(calendar.getTime()));
-            }else {
+            } else {
                 record.setRecordType("更新");
             }
             recordMapper.insert(record);
@@ -181,6 +167,13 @@ public class PurchaseServiceimpl extends ServiceImpl<PurchaseMapper, TabPurchase
                     COSUtil.deletefile(purchase.getPurchaseFile());
                     purchaseMapper.deleteById(purchase.getPurchaseId());
                 }
+                //向操作记录表添加记录
+                TabRecord record = new TabRecord();
+                record.setRecordType("采购项目删除");
+                record.setRecordOperator(GetUser.getuser().getUserContactName());
+                record.setRecordId("purchase:" + purchase.getPurchaseId() + "_" + purchase.getPurchaseName());
+                Calendar calendar = Calendar.getInstance();
+                record.setRecordUpdateTime(String.valueOf(calendar.getTime()));
                 return Result.resultFactory(Status.DELETE_INFO_SUCCESS);
             } catch (Exception e) {
                 return Result.resultFactory(Status.DELETE_FAIL);
@@ -209,47 +202,53 @@ public class PurchaseServiceimpl extends ServiceImpl<PurchaseMapper, TabPurchase
 
     @Override
     public Result purchaseCount() {
-        return Result.resultFactory(Status.SUCCESS,purchaseMapper.selectCount(null));
+        return Result.resultFactory(Status.SUCCESS, purchaseMapper.selectCount(null));
     }
 
     @Override
     public Result purchase_amount() {
-        String where="sum(purchase_budget) as amount";
-        QueryWrapper<TabPurchase> wrapper=new QueryWrapper<>();
+        String where = "sum(purchase_budget) as amount";
+        QueryWrapper<TabPurchase> wrapper = new QueryWrapper<>();
         wrapper.select(where);
-        return Result.resultFactory(Status.SUCCESS,purchaseMapper.selectMaps(wrapper));
+        return Result.resultFactory(Status.SUCCESS, purchaseMapper.selectMaps(wrapper));
     }
 
     @Override
     public Result purchase_moth_amount() {
-        List<Map<String,Object>> moth_amount=new ArrayList<>();
-        String where="sum(purchase_budget) as amount";
-        for(int i=1; i<=12; i++){
-            moth_amount.add(amount(i,where));
+        List<Map<String, Object>> moth_amount = new ArrayList<>();
+        String where = "sum(purchase_budget) as amount";
+        for (int i = 1; i <= 12; i++) {
+            if (amount(i, where) == null) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("amount", 0);
+                moth_amount.add(map);
+            } else {
+                moth_amount.add(amount(i, where));
+            }
         }
-        return Result.resultFactory(Status.SUCCESS,moth_amount);
+        return Result.resultFactory(Status.SUCCESS, moth_amount);
     }
 
     @Override
     public Result get_purchase_moth_num() {
-        List<Map<String,Object>> moth_num=new ArrayList<>();
-        String where="count(*) as Purchase_num";
-        for(int i=1; i<=12; i++){
-            moth_num.add(amount(i,where));
+        List<Map<String, Object>> moth_num = new ArrayList<>();
+        String where = "count(*) as Purchase_num";
+        for (int i = 1; i <= 12; i++) {
+            moth_num.add(amount(i, where));
         }
-        return Result.resultFactory(Status.SUCCESS,moth_num);
+        return Result.resultFactory(Status.SUCCESS, moth_num);
     }
 
-    public Map<String, Object> amount(int index,String where){
-    QueryWrapper<TabPurchase> wrapper=new QueryWrapper<>();
-    Calendar calendar = Calendar.getInstance();
-    int year = calendar.get(Calendar.YEAR);
-    wrapper.select(where);
-    if(index<10){
-        wrapper.like("purchase_registration_deadline",year+" 年 0"+index+" 月");
-    }else {
-        wrapper.like("purchase_registration_deadline", year + " 年 " + index + " 月");
+    public Map<String, Object> amount(int index, String where) {
+        QueryWrapper<TabPurchase> wrapper = new QueryWrapper<>();
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        wrapper.select(where);
+        if (index < 10) {
+            wrapper.like("purchase_registration_deadline", year + " 年 0" + index + " 月");
+        } else {
+            wrapper.like("purchase_registration_deadline", year + " 年 " + index + " 月");
+        }
+        return purchaseMapper.selectMaps(wrapper).get(0);
     }
-    return purchaseMapper.selectMaps(wrapper).get(0);
-}
 }

@@ -23,7 +23,7 @@ public class PurchaseController {
     /**
      * 查找所有项目
      */
-    @PreAuthorize("hasAnyAuthority('purchase_manager','admin')")
+
     @PostMapping("purchase_findAll_json")
     public Result purchase_findAll_json(@RequestBody PageQuery pageQuery) {
         return purchaseService.findAll(pageQuery);

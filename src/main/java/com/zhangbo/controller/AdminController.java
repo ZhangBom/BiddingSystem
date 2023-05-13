@@ -19,7 +19,7 @@ public class AdminController {
     public Result getInfo(){
         return adminService.getInfo();
     }
-    @PreAuthorize("hasAnyAuthority('amdin')")
+    @PreAuthorize("hasAnyAuthority('admin')")
     @PostMapping("register")
     public Result register(@RequestBody TabAdmin admin) {
        return adminService.register(admin);
