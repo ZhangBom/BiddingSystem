@@ -32,8 +32,8 @@ public class UserDetailsServiceImpl  implements UserDetailsService {
         if (Objects.isNull(user)) {
             throw new UsernameNotFoundException("用户名或密码错误,请重新登录");
         }
-        else if(user.getUserStatus().equals("待审核")){
-            throw new DisabledException("账号被封禁，请联系管理员！");
+        else if(!user.getUserStatus().equals("0")){
+            throw new DisabledException("账号被封禁，或修改信息后审核未通过，请联系管理员！");
         }else {
             //将用户权限信息封装到UserDetails中
             List<String> list = menuMapper.selectPermsByUserId(user.getUserId());

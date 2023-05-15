@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zhangbo.mapper.ApplicationMapper;
 import com.zhangbo.mapper.PurchaseMapper;
 import com.zhangbo.mapper.RecordMapper;
 import com.zhangbo.mapper.UserMapper;
@@ -29,8 +30,11 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseMapper, TabPurchase
     private PurchaseMapper purchaseMapper;
     @Autowired
     private RecordMapper recordMapper;
+    @Autowired
+    ApplicationMapper applicationMapper;
     //自定义文件夹名称项目招标文件夹
     private static final String PURCHASEFILE = "/purchasefile/";
+    DateDiff dateDiff = new DateDiff();
     //自定义文件夹名称项目标书文件夹
     private static final String TENDER = "/tenderfile/";
 
@@ -147,6 +151,25 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseMapper, TabPurchase
                 record.setRecordType("更新");
             }
             recordMapper.insert(record);
+            if (purchase.getPurchaseStatus().equals("审核通过")){
+                QueryWrapper<TabApplication> wrapper=new QueryWrapper<>();
+                wrapper.eq("purchase_id",purchase.getPurchaseId());
+//                查询报名表是否已有信息，有则删除
+                if(Objects.isNull(applicationMapper.selectOne(wrapper))) {
+                    //想报名表插入数据
+                    TabApplication application = new TabApplication();
+                    application.setPurchaseId(purchase.getPurchaseId());
+                    application.setPurchaseContact(purchase.getPurchaseContact());
+                    application.setPurchasePhone(purchase.getPurchasePhone());
+                    application.setPurchaseName(purchase.getPurchaseName());
+                    application.setPurchaseAccount(purchase.getPurchaseAccount());
+                    application.setPurchaseExplain(purchase.getPurchaseExplain());
+                    String str = purchase.getPurchaseRegistrationDeadline().replaceAll("\\s*", "");
+                    //设置开标时间
+                    application.setPurchaseBidsTime(dateDiff.DateWeekend(str));
+                    applicationMapper.insert(application);
+                }
+            }
             return Result.resultFactory(Status.OPERATION_SUCCESS);
         } else {
             return Result.resultFactory(Status.JURISDICTION_FAIL);

@@ -29,7 +29,7 @@ public class DateDiff {
         String DateTime=year+"年"+moth+"月"+day+"日";
         return DateTime;
     }
-    //获取当前时间
+    //获取当前时间 年 月 日 时 分
     public String getNow(){
         Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);//年份数值
@@ -53,6 +53,7 @@ public class DateDiff {
         String DateTime=year+"年"+m+"月"+d+"日"+h+"时"+mi+"分";
         return DateTime;
     }
+    //YYYY-MM-DD hh:mm:ss
     public String getNowhhhh(){
         Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);//年份数值

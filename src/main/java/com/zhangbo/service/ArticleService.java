@@ -15,4 +15,5 @@ public interface ArticleService {
 
     Result articleImage(MultipartFile file);
 
+    Result get_result_article();
 }

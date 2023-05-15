@@ -26,7 +26,7 @@ class BiddingSystemApplicationTests {
     @Test
     void text() {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        String passHash = encoder.encode("zhangsan123");
+        String passHash = encoder.encode("zhangbo123");
         System.out.println(passHash);
         //按时间排序
     }

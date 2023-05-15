@@ -15,7 +15,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.zhangbo.mapper.UserMapper;
@@ -41,6 +40,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Autowired
     private RecordMapper recordMapper;
 
+    private DateDiff dateDiff=new DateDiff();
     //头像文件夹
     private static final String IMAGEFILE = "/avatar/";
 
@@ -99,7 +99,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                     user.setUserPassword(passwordEncoder.encode(user.getUserPassword()));//密码加密
                     //设置用户状态为待审核
                     user.setUserStatus("0");
-                    DateDiff dateDiff=new DateDiff();
                     user.setUserRegisterTime(dateDiff.getNowhhhh());
                     save(user);
                     return Result.resultFactory(Status.REGISTER_SUCCESS, user);
@@ -191,16 +190,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             record.setRecordType("账号管理");
             record.setRecordOperator(GetUser.getuser().getUserContactName());
             record.setRecordId("user:" + user.getUserId());
-            Calendar calendar = Calendar.getInstance();
-            record.setRecordUpdateTime(String.valueOf(calendar.getTime()));
+            record.setRecordUpdateTime(dateDiff.getNow());
             recordMapper.insert(record);
             if (user.getUserStatus().equals("1")){
-                //判断用户是否在线
-                String redisKey = "user:" + user.getUserId();
-                LoginUser loginUser = redisCache.getCacheObject(redisKey);
-                if (!Objects.isNull(loginUser)) {
-                    redisCache.deleteObject(redisKey);
-                }
+                    //判断用户是否在线
+                    String redisKey = "user:" + user.getUserId();
+                    LoginUser loginUser = redisCache.getCacheObject(redisKey);
+                    if (!Objects.isNull(loginUser)) {
+                        redisCache.deleteObject(redisKey);
+                    }
             }
             return Result.resultFactory(Status.OPERATION_SUCCESS);
         } else {
@@ -288,7 +286,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         TabSuggestion tabSuggestion = new TabSuggestion();
         tabSuggestion.setContent(textarea);
         tabSuggestion.setUserId(GetUser.getuserid());
-        DateDiff dateDiff = new DateDiff();
         tabSuggestion.setSuggestionTime(dateDiff.getNow());
         tabSuggestion.setStatus("未处理");
         suggestionMapper.insert(tabSuggestion);
@@ -317,6 +314,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public Result deal_Suggestion(TabSuggestion suggestion) {
         suggestion.setStatus("已处理");
+        //获取当前时间
+        suggestion.setRecordTime(dateDiff.getNow());
         MailUtils.sendMail(suggestion.getUserId(), "您的反馈我们已经处理，请前往投诉处理公告处查看处理详情", "xx人民医院");
         suggestionMapper.updateById(suggestion);
         return Result.resultFactory(Status.OPERATION_SUCCESS);

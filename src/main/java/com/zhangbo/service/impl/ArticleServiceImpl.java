@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zhangbo.mapper.ApplicationMapper;
 import com.zhangbo.mapper.ArticleMapper;
 import com.zhangbo.mapper.RecordMapper;
+import com.zhangbo.pojo.TabPurchase;
 import com.zhangbo.pojo.TabRecord;
 import com.zhangbo.until.BackPage;
 import com.zhangbo.until.PageQuery;
@@ -73,5 +74,15 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, TabArticle> i
     public Result articleImage(MultipartFile file) {
       String url= COSUtil.uploadfile(file,IMAGEFILE);
         return Result.resultFactory(Status.UPLOAD_PICTURE_SUCCESS,url);
+    }
+
+    @Override
+    public Result get_result_article() {
+        QueryWrapper<TabArticle> wrapper = new QueryWrapper<>();
+        wrapper.eq("article_type","结果公告");
+        wrapper.orderByDesc("article_time");
+        wrapper.last("limit 0,10 ");
+        List<TabArticle> list = articleMapper.selectList(wrapper);
+        return Result.resultFactory(Status.STATUS, list);
     }
 }

@@ -35,5 +35,8 @@ public class ArticleController {
         return articleService.articleImage(file);
     }
 
-
+    @GetMapping("get_result_article")
+    public Result  get_result_article(){
+        return articleService.get_result_article();
+    }
 }

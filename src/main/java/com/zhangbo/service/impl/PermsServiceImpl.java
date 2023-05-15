@@ -29,6 +29,7 @@ public class PermsServiceImpl extends ServiceImpl<MenuMapper, Menu> implements P
     private RoleMapper roleMapper;
     @Autowired
     private RecordMapper recordMapper;
+    DateDiff dateDiff = new DateDiff();
 
     @Override
     public Result role_findAll(PageQuery pageQuery) {
@@ -74,8 +75,7 @@ public class PermsServiceImpl extends ServiceImpl<MenuMapper, Menu> implements P
         record.setRecordType("权限修改");
         record.setRecordOperator(GetUser.getuser().getUserContactName());
         record.setRecordId("role:"+role_id);
-        Calendar calendar = Calendar.getInstance();
-        record.setRecordUpdateTime(String.valueOf(calendar.getTime()));
+        record.setRecordUpdateTime(dateDiff.getNow());
         recordMapper.insert(record);
         return Result.resultFactory(Status.OPERATION_SUCCESS);
     }
