@@ -31,9 +31,9 @@ public class COSUtil {
 //    @Value("${cos.baseUrl}")
 //    private static String baseUrl;
     // 存储桶名称
-    private static final String bucketName = "zhangbo-1306119450";
+    private static final String bucketName = "zhangbo-130611945012";
     //secretId 秘钥id
-    private static final String accessKey = "AKID9Jya44zpfVJiz8JLI9sSpW6Wmy7AA6vb";
+    private static final String accessKey = "AKID9Jya44zpfVJiz8JLI9sSpW6Wmy7AA6vb12";
     //SecretKey 秘钥
     private static final String regionName = "ap-chengdu";
     //COS 区域
