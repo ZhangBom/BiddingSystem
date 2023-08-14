@@ -20,14 +20,14 @@ public class ExpertController {
     public Result findAll_export(@RequestBody PageQuery pageQuery){
         return expertService.findAll(pageQuery);
     }
-    @PreAuthorize("hasAnyAuthority('admin','purchase_manager','expert')")
-    @PutMapping("expert_update")
-    public Result expert_update(@RequestBody TabExpert expert) {
-        return expertService.expert_update(expert);
-    }
-    @PreAuthorize("hasAnyAuthority('expert')")
-    @GetMapping("info")
-    public Result getInfo(){
-        return expertService.getInfo();
-    }
+//    @PreAuthorize("hasAnyAuthority('admin','purchase_manager','expert')")
+//    @PutMapping("expert_update")
+//    public Result expert_update(@RequestBody TabExpert expert) {
+//        return expertService.expert_update(expert);
+//    }
+//    @PreAuthorize("hasAnyAuthority('expert')")
+//    @GetMapping("info")
+//    public Result getInfo(){
+//        return expertService.getInfo();
+//    }
 }
