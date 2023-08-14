@@ -32,6 +32,7 @@ public class VendorServiceImpl extends ServiceImpl<VendorMapper, TabVendor> impl
 
     @Override
     public Result findAll(PageQuery pageQuery) {
+        System.out.println(pageQuery);
         BackPage<TabVendor> tableVendorBackPage = new BackPage<>();
         //构建查询条件
         QueryWrapper<TabVendor> wrapper = new QueryWrapper<>();

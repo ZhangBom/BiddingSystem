@@ -141,6 +141,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         userInfo.setUsertype(loginUser.getUser().getUserType());
         userInfo.setUserphone(loginUser.getUser().getUserPhone());
         userInfo.setUseremail(loginUser.getUser().getUserEmail());
+        userInfo.setPerms(loginUser.getPerms());
         return Result.resultFactory(Status.STATUS, userInfo);
     }
 
@@ -181,7 +182,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         tabPurchaseBackPage.setTotalNum(postIPage.getTotal());
         return Result.resultFactory(Status.SUCCESS, tabPurchaseBackPage);
     }
-
+    /**
+     * 用户账号封禁与解封
+     * @return
+     */
     @Override
     public Result banuser(User user) {
         if (GetUser.getuser().getUserType().equals("管理员")) {
@@ -205,7 +209,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             return Result.resultFactory(Status.LOW_POWER_ADMIN);
         }
     }
-
+    /**
+     * 验修改头像
+     * @return
+     */
     @Override
     public Result user_avatar(MultipartFile file) {
         //获取操作的用户对象
@@ -229,7 +236,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         redisCache.setCacheObject(redisKey, loginUser, 60 * 60 * 24, TimeUnit.SECONDS);
         return Result.resultFactory(Status.MODIFY_HEAD_SUCCESS, url);
     }
-
+    /**
+     * 验证码
+     * @return
+     */
     @Override
     public Result checkbox() {
         String code = CodeKey.getCode();
@@ -241,7 +251,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         MailUtils.sendMail(GetUser.getuser().getUserEmail(), text, "xx医院招标采购管理系统验证码");
         return Result.resultFactory(Status.CHECKED_HAS, code);
     }
-
+    /**
+     * 用户密码修改
+     * @param params
+     * @return
+     */
     @Override
     public Result updatepass(Params params) {
         //匹配验证码
@@ -258,7 +272,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             return Result.resultFactory(Status.CHECKED_ERROR);
         }
     }
-
+    /**
+     * 用户信息更新
+     * @param params
+     * @return
+     */
     @Override
     public Result user_update(Params params) {
         //匹配验证码
@@ -281,6 +299,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
     }
 
+    /**
+     * 投诉与反馈建议
+     * @param textarea
+     * @return
+     */
     @Override
     public Result suggestion(String textarea) {
         TabSuggestion tabSuggestion = new TabSuggestion();
@@ -291,7 +314,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         suggestionMapper.insert(tabSuggestion);
         return Result.resultFactory(Status.SUGGESTION_SUCCESS);
     }
-
+    /**
+     * 查询投诉与反馈建议
+     * @param pageQuery
+     * @return
+     */
     @Override
     public Result get_suggestion(PageQuery pageQuery) {
         BackPage<TabSuggestion> suggestionBackPage = new BackPage<>();
@@ -310,7 +337,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return Result.resultFactory(Status.SUCCESS, suggestionBackPage);
 
     }
-
+    /**
+     * 查询投诉与反馈建议处理
+     * @param suggestion
+     * @return
+     */
     @Override
     public Result deal_Suggestion(TabSuggestion suggestion) {
         suggestion.setStatus("已处理");
@@ -320,17 +351,38 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         suggestionMapper.updateById(suggestion);
         return Result.resultFactory(Status.OPERATION_SUCCESS);
     }
-
+    /**
+     * 统计用户数
+     * @return
+     */
     @Override
     public Result userCount() {
         return Result.resultFactory(Status.SUCCESS, userMapper.selectCount(null));
     }
-
+    /**
+     * 统计投诉与反馈数量
+     * @return
+     */
     @Override
     public Result suggestionCount() {
         return Result.resultFactory(Status.SUCCESS, suggestionMapper.selectCount(null));
     }
-
+    /**
+     * 统计投诉与反馈数量（每月）
+     * @return
+     */
+    @Override
+    public Result get_suggestion_moth_num() {
+        List<Map<String, Object>> moth_amount = new ArrayList<>();
+        for (int i = 1; i <= 12; i++) {
+            moth_amount.add(suggestion_amount(i));
+        }
+        return Result.resultFactory(Status.SUCCESS, moth_amount);
+    }
+    /**
+     * 统计用户数（每月）
+     * @return
+     */
     @Override
     public Result get_user_moth_num() {
         List<Map<String, Object>> moth_amount = new ArrayList<>();
@@ -339,7 +391,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
         return Result.resultFactory(Status.SUCCESS, moth_amount);
     }
-
+    /**
+     * 统计用户数（月）
+     * @param index 月份
+     * @return
+     */
     public Map<String, Object> amount(int index) {
         QueryWrapper<User> wrapper = new QueryWrapper<>();
         Calendar calendar = Calendar.getInstance();
@@ -352,7 +408,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
         return userMapper.selectMaps(wrapper).get(0);
     }
-
+    public Map<String, Object> suggestion_amount(int index) {
+        QueryWrapper<TabSuggestion> wrapper = new QueryWrapper<>();
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        wrapper.select("count(*) as suggestion_num");
+        if (index < 10) {
+            wrapper.like("suggestion_time", year + "年0" + index + "月");
+        } else {
+            wrapper.like("suggestion_time", year + "年" + index + "月");
+        }
+        return suggestionMapper.selectMaps(wrapper).get(0);
+    }
     /**
      * 检查用名是否存在
      */

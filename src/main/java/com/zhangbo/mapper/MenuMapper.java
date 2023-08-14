@@ -10,6 +10,8 @@ public interface MenuMapper extends BaseMapper<Menu> {
     List<String> selectPermsByUserId(String id);
     List<Menu> selectPermsByRoleId(String role_id);
 
+    String selectRoleByUserId(String user_id);
+    List<String> selectroelPermsByRoleId(String role_id);
     void delete_role_menu(String role_id);
 
     void add_role(String name,String role_key);

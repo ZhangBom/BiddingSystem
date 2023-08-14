@@ -5,6 +5,7 @@ import com.zhangbo.service.VendorService;
 import com.zhangbo.until.PageQuery;
 import com.zhangbo.until.Result;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,6 +23,7 @@ public class VendorController {
      * @param pageQuery
      * @return
      */
+    @PreAuthorize("hasAnyAuthority('admin','purchase_manager')")
     @PostMapping("findAll")
     public Result vendor_findAll(@RequestBody PageQuery pageQuery) {
         return vendorService.findAll(pageQuery);
@@ -38,7 +40,7 @@ public class VendorController {
     }
 
     /**
-     * 获取供应商级别
+     * 获取供应商类型
      *
      * @return
      */
@@ -51,10 +53,12 @@ public class VendorController {
      *
      * @return
      */
+    @PreAuthorize("hasAnyAuthority('admin','purchase_manager','vendor')")
     @PutMapping("vendor_update")
     public Result vendor_update(@RequestBody TabVendor vendor) {
         return vendorService.vendor_update(vendor);
     }
+    @PreAuthorize("hasAnyAuthority('vendor')")
     @GetMapping("info")
     public Result getInfo(){
         return vendorService.getInfo();
@@ -64,7 +68,7 @@ public class VendorController {
     public Result checkvendor(){
         return vendorService.checkvendor();
     }
-
+    @PreAuthorize("hasAnyAuthority('vendor')")
     @PostMapping("vendor_file_upload")
     public Result vendor_file_upload(@RequestParam("file") MultipartFile file,@RequestParam("vendorId") String vendor_id){
         return vendorService.vendor_file_upload(file,vendor_id);

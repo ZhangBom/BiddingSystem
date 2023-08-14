@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Calendar;
 import java.util.List;
+import java.util.Objects;
 
 
 @Service
@@ -89,7 +90,13 @@ public class PermsServiceImpl extends ServiceImpl<MenuMapper, Menu> implements P
 
     @Override
     public Result addRole(TabRole role) {
-        mapper.add_role(role.getName(), role.getRoleKey());
-        return Result.resultFactory(Status.SUCCESS);
+        QueryWrapper<TabRole> wrapper=new QueryWrapper<>();
+        wrapper.eq("role_key",role.getRoleKey());
+        if(Objects.isNull(roleMapper.selectOne(wrapper))){
+            mapper.add_role(role.getName(), role.getRoleKey());
+            return Result.resultFactory(Status.INSERT_INFO_SUCCESS);
+        }else{
+            return Result.resultFactory(Status.INSERT_INFO_FAIL_ERROR);
+        }
     }
 }

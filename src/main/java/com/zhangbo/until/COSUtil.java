@@ -31,13 +31,13 @@ public class COSUtil {
 //    @Value("${cos.baseUrl}")
 //    private static String baseUrl;
     // 存储桶名称
-    private static final String bucketName = "AKIDjMxPhptoaCex77xkXDi3GJQTQFvRn7JO";
+    private static final String bucketName = "zhangbo-1306119450";
     //secretId 秘钥id
-    private static final String accessKey = "4ykMp9ID5xeaO1Vr4OcgaHueO7gGzhKm";
+    private static final String accessKey = "AKIDISO6g03taBIB0g5DAtPfiX8ewylGVVHp";
     //SecretKey 秘钥
     private static final String regionName = "ap-chengdu";
     //COS 区域
-    private static final String secretKey = "oRmvhMxQmz6SddS2Wq2OwLZcanvvpXAb";
+    private static final String secretKey = "LSO57zd3GRSFo7B2ez4tSr2xlOkskQpx";
     // 访问域名
     public static final String baseUrl = "https://zhangbo-1306119450.cos.ap-chengdu.myqcloud.com/";
     // 创建COS 凭证

@@ -17,6 +17,7 @@ public enum Status {
     SUBMIT_SUCCESS(200,"提交成功"),
     SUBMIT_FAIL(0,"提交失败"),
     JURISDICTION_FAIL(401,"权限不足，您不能更改他人项目"),
+    UPDATE_PURCHASE_FAIL(401,"修改失败，项目报名已启动！不能修改"),
     DID_REJECTION(0,"此项目参与供应商低于3家，请废标处理"),
     DID_REJECTION_ILLEGAL(0,"此项目参与供应商低于3家，已废标处理"),
     DID_REJECTION_FAIL(0,"此项目正常，不能废标"),
@@ -87,7 +88,7 @@ public enum Status {
     DELETE_CATEGORY_INFO_ERROR(0,"删除失败！该分类还有线路"),
     DELETE_SELLER_INFO_ERROR(0,"删除失败！该商家还有经营线路"),
     INSERT_INFO_SUCCESS(200,"添加成功"),
-    INSERT_INFO_FAIL_ERROR(0,"添加失败"),
+    INSERT_INFO_FAIL_ERROR(0,"添加失败,key重复"),
     UNAUTHORIZED_ACCESS(403,"未授权访问"),
     LOGOUT_SUCCESS(200,"退出成功");
 //    Unauthorized access

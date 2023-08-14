@@ -42,4 +42,6 @@ public interface UserService {
     Result suggestionCount();
 
     Result get_user_moth_num();
+
+    Result get_suggestion_moth_num();
 }

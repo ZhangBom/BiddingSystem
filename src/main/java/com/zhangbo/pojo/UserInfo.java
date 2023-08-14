@@ -18,5 +18,6 @@ public class UserInfo {
     String userphone;
     String useremail;
     List roles;
+    List perms;
 
 }

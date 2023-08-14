@@ -44,6 +44,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/user/register").anonymous()
                 .antMatchers("/structure/findAllopt").permitAll()
                 .antMatchers("/purchase/purchase_top10").permitAll()
+//                .antMatchers("/purchase/find_purchaseById").permitAll()
                 .antMatchers("/article/get_result_article").permitAll()
 //                .antMatchers("/user/info").anonymous()
                 // 除上面外的所有请求全部需要鉴权认证

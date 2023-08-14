@@ -20,7 +20,7 @@ public class ScoreController {
         System.out.println(score);
        return scoreService.vendorScore(score);
     }
-
+    @PreAuthorize("hasAnyAuthority('expert','purchase_manager')")
     @GetMapping("getScore")
     public Result get_score(@RequestParam("purchaseId") String purchase_id,@RequestParam("vendorAccount") String vendor_account){
         return scoreService.get_score(purchase_id,vendor_account);

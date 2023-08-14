@@ -19,6 +19,7 @@ public class LoginUser implements UserDetails, Serializable {
     private User user;
 
     private List<String> permission;
+    private List<String> perms;
 //    @JSONField(serialize = true)
     private List<SimpleGrantedAuthority> authorities;
 
@@ -62,8 +63,9 @@ public class LoginUser implements UserDetails, Serializable {
         return true;
     }
 
-    public LoginUser(User user, List<String> permission) {
+    public LoginUser(User user, List<String> permission,List<String> perms) {
         this.user = user;
         this.permission = permission;
+        this.perms=perms;
     }
 }

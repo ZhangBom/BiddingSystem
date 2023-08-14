@@ -7,6 +7,7 @@ import com.zhangbo.until.PageQuery;
 import com.zhangbo.until.Params;
 import com.zhangbo.until.Result;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -35,6 +36,7 @@ public class UserController {
     public Result get_userinfo() {
         return userService.userinfo();
     }
+    @PreAuthorize("hasAnyAuthority('admin')")
   @PostMapping("findAll")
   public Result findAll(@RequestBody PageQuery pageQuery){
         return userService.findAll(pageQuery);
@@ -43,6 +45,7 @@ public class UserController {
     public Result register(@RequestBody User user) {
         return userService.register(user);
     }
+    @PreAuthorize("hasAnyAuthority('admin')")
     @PutMapping("ban_user")
     public Result banuser(@RequestBody User user){
         return  userService.banuser(user);
@@ -75,17 +78,25 @@ public class UserController {
     public Result deal_Suggestion(@RequestBody TabSuggestion suggestion){
         return userService.deal_Suggestion(suggestion);
     }
+    @PreAuthorize("hasAnyAuthority('admin','purchase_manager')")
     @GetMapping("userCount")
     public Result userCount(){
         return userService.userCount();
     }
+    @PreAuthorize("hasAnyAuthority('admin','purchase_manager')")
     @GetMapping("suggestionCount")
     public Result suggestionCount(){
         return userService.suggestionCount();
     }
+    @PreAuthorize("hasAnyAuthority('admin','purchase_manager')")
     @GetMapping("get_user_moth_num")
     public Result get_user_moth_num(){
         return userService.get_user_moth_num();
+    }
+    @PreAuthorize("hasAnyAuthority('admin','purchase_manager')")
+    @GetMapping("get_suggestion_moth_num")
+    public Result get_suggestion_moth_num(){
+        return userService.get_suggestion_moth_num();
     }
 }
 

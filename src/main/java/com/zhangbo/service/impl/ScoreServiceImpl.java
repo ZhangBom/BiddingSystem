@@ -77,14 +77,14 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, TabScore> impleme
         scoreQueryWrapper.eq("purchase_id", purchase_id);
         scoreQueryWrapper.eq("vendor_account", vendor_account);
         int score_num = scoreMapper.selectCount(scoreQueryWrapper);
+
         if (expert_num == score_num) {
             scoreQueryWrapper.select("sum(vendor_score) as score");
             TabScore tabScore = scoreMapper.selectOne(scoreQueryWrapper);
-
             QueryWrapper<TabApplication> applicationQueryWrapper = new QueryWrapper<>();
             applicationQueryWrapper.eq("purchase_id", purchase_id);
             applicationQueryWrapper.eq("vendor_account", vendor_account);
-            //向评分表插入评分
+            //向评分报名表插入评分
             TabApplication tabApplication = applicationMapper.selectOne(applicationQueryWrapper);
             tabApplication.setVendorScore(tabScore.getScore() / score_num);
             applicationMapper.updateById(tabApplication);

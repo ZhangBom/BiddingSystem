@@ -53,4 +53,24 @@
         values
             (#{role_id},#{menu_id})
     </insert>
+    <select id="selectRoleByUserId" resultType="java.lang.String">
+        SELECT
+            role_id
+        FROM
+            tab_user_role
+        WHERE
+            user_id=#{uesr_id}
+    </select>
+    <select id="selectroelPermsByRoleId" resultType="java.lang.String">
+        SELECT
+            DISTINCT m.`perms`
+        FROM
+            tab_role  r
+                LEFT JOIN `tab_role_menu` rm ON r.`id` = rm.`role_id`
+                LEFT JOIN `tab_menu` m ON m.`id` = rm.`menu_id`
+        WHERE
+            r.id = #{role_id}
+          AND r.`status` = 0
+          AND m.`status` = 0
+    </select>
 </mapper>

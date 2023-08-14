@@ -86,7 +86,7 @@ public class PurchaseController {
         return purchaseService.purchase_top10();
     }
 
-    @PreAuthorize("hasAnyAuthority('purchase_manager','vendor','expert','admin')")
+//    @PreAuthorize("hasAnyAuthority('purchase_manager','vendor','expert','admin')")
     @GetMapping("find_purchaseById")
     public Result find_purchaseById(@RequestParam String purchaseId) {
         return purchaseService.find_purchaseById(purchaseId);

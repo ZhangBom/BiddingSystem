@@ -25,6 +25,8 @@ public class ApplicationServiceImpl extends ServiceImpl<ApplicationMapper, TabAp
     @Autowired
     private ArticleMapper articleMapper;
     @Autowired
+    private ScoreMapper scoreMapper;
+    @Autowired
     private PurchaseMapper purchaseMapper;
     @Autowired
     private OutcomeMapper outcomeMapper;
@@ -206,7 +208,15 @@ public class ApplicationServiceImpl extends ServiceImpl<ApplicationMapper, TabAp
         wrapper.eq("expert_account", "expert_account");
         wrapper.orderByDesc("vendor_score");
         List<TabApplication> list = applicationMapper.selectList(wrapper);
-        if (list.size() < 3) {
+        //查询评分表项目编号按照评分专家分组，验证评分专家数量
+        String where = "count(expert_account)";
+        QueryWrapper<TabScore> wrapper1 = new QueryWrapper<>();
+        wrapper1.eq("purchase_id", purchase_id);
+        wrapper1.groupBy("expert_account");
+        wrapper1.select(where);
+        List<TabScore> list1= scoreMapper.selectList(wrapper1);
+        //暂不判断专家数量
+        if (list.size() < 3 ) {
             //供应商少于3家，废标处理
             Did_rejection(purchase_id);
             return Result.resultFactory(Status.DID_REJECTION);
@@ -216,7 +226,7 @@ public class ApplicationServiceImpl extends ServiceImpl<ApplicationMapper, TabAp
             TabVendor vendor = vendorMapper.selectById(application.getVendorId());
             //发送中标通知
             MailUtils.sendMail(vendor.getVendorEmail(), "恭喜您成为" + application.getPurchaseName() + "的中标供应商，请联系项目负责人商定合同签订事宜。", "XX人民医院" + application.getPurchaseName());
-            //发送未中标通知
+//            //发送未中标通知
             send_fail_msg(purchase_id, application.getVendorId(), application.getVendorScore());
             //添加中标结果公告
             TabArticle article = new TabArticle();
@@ -224,6 +234,7 @@ public class ApplicationServiceImpl extends ServiceImpl<ApplicationMapper, TabAp
             article.setArticleContent("<h1 style=\"text-align: center;\" >" + application.getPurchaseName() + "中标公告</h1> <p>项目名称：" + application.getPurchaseName() + "</p> <p>项目编号：" + application.getPurchaseId()
                     + "</p> <p>招&nbsp; 标 方：xx人民医院</p> <p>固定电话：01234567</p> <p>电子邮箱：xxxxxxx@gmail.com</p> <p>开标结果：已中标</p> <p>中标人："
                     + vendor.getVendorName() + "</p>  <p>&nbsp;</p> <p>&nbsp;</p>");
+
             article.setArticleType("结果公告");
             article.setArticleTime(dateDiff.getNow());
             article.setArticleRecord("自动生成");
@@ -235,10 +246,11 @@ public class ApplicationServiceImpl extends ServiceImpl<ApplicationMapper, TabAp
             TabOutcome outcome = new TabOutcome();
             outcome.setPurchaseId(purchase.getPurchaseId());
             outcome.setPurchaseName(purchase.getPurchaseName());
-            outcome.setPurchaseVendorContact(purchase.getPurchaseName() + "项目采购合同");
-            outcome.setPurchaseTenderer(purchase.getPurchaseContact());
+            outcome.setPurchaseContract(purchase.getPurchaseName() + "项目采购合同");
+            outcome.setPurchaseTenderer("xx人民医院 "+purchase.getPurchaseContact());
             outcome.setPurchaseTenderMethod(purchase.getPurchaseTenderMethod());
             outcome.setPurchaseCompanyName(vendor.getVendorName());
+            outcome.setPurchaseVendorContact(vendor.getVendorContactName());
             outcome.setPurchaseVendorPhone(vendor.getVendorPhone());
             outcome.setPurchaseVendorEmail(vendor.getVendorEmail());
             outcomeMapper.insert(outcome);
@@ -275,7 +287,7 @@ public class ApplicationServiceImpl extends ServiceImpl<ApplicationMapper, TabAp
         wrapper.eq("purchase_id", purchase_id);
         wrapper.ne("vendor_id", vendor_id);
         List<TabApplication> list = applicationMapper.selectList(wrapper);
-        for (int i = 0; i <= list.size(); i++) {
+        for (int i = 0; i < list.size(); i++) {
             //获取中标供应商信息
             TabVendor vendor = vendorMapper.selectById(list.get(i).getVendorId());
             //获得该供应商的得分
@@ -283,7 +295,12 @@ public class ApplicationServiceImpl extends ServiceImpl<ApplicationMapper, TabAp
             tabApplicationQueryWrapper.eq("purchase_id", purchase_id);
             tabApplicationQueryWrapper.eq("vendor_id", vendor_id);
             TabApplication application = applicationMapper.selectOne(tabApplicationQueryWrapper);
-            //发送未标通知
+//            System.out.println(
+//                    (vendor.getVendorEmail()+ "很遗憾您参加的" + application.getPurchaseName() +
+//                    "项目未中标，您的分数为:" + application.getVendorScore() + "分,中标公司分数为" + max_score + "分"+ "XX人民医院" +
+//                    application.getPurchaseName()
+//            ));
+//            发送未标通知
             MailUtils.sendMail(vendor.getVendorEmail(), "很遗憾您参加的" + application.getPurchaseName() +
                     "项目未中标，您的分数为:" + application.getVendorScore() + "分,中标公司分数为" + max_score + "分", "XX人民医院" +
                     application.getPurchaseName());

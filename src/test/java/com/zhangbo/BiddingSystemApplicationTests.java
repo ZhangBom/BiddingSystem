@@ -21,13 +21,19 @@ import java.util.Map;
 @SpringBootTest
 class BiddingSystemApplicationTests {
     @Autowired
-    PurchaseService purchaseService;
-
+    private ScoreMapper scoreMapper;
+    @Autowired
+    private UserService service;
     @Test
     void text() {
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        String passHash = encoder.encode("zhangbo123");
-        System.out.println(passHash);
+        String purchase_id="102";
+        String where = "count(expert_account)";
+        QueryWrapper<TabScore> wrapper = new QueryWrapper<>();
+        wrapper.eq("purchase_id", purchase_id);
+        wrapper.groupBy("expert_account");
+        wrapper.select(where);
+        System.out.println(scoreMapper.selectList(wrapper));
         //按时间排序
     }
+
 }

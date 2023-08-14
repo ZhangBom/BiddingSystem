@@ -3,6 +3,7 @@ package com.zhangbo.service.impl;
 import com.zhangbo.mapper.MenuMapper;
 import com.zhangbo.mapper.UserMapper;
 import com.zhangbo.pojo.LoginUser;
+import com.zhangbo.pojo.Menu;
 import com.zhangbo.pojo.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.DisabledException;
@@ -13,6 +14,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -37,7 +39,10 @@ public class UserDetailsServiceImpl  implements UserDetailsService {
         }else {
             //将用户权限信息封装到UserDetails中
             List<String> list = menuMapper.selectPermsByUserId(user.getUserId());
-            return new LoginUser(user, list);
+            //获取用户类型取得角色id
+           String role_id=menuMapper.selectRoleByUserId(user.getUserId());
+            List<String> perms = menuMapper.selectroelPermsByRoleId(role_id);
+            return new LoginUser(user, list,perms);
         }
     }
 }

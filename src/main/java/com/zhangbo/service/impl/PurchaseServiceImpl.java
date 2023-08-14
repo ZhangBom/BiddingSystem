@@ -75,7 +75,8 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseMapper, TabPurchase
         // 构造分页信息，其中的Page<>(page, PAGE_RECORDS_NUM)的第一个参数是当前页数（从第几页开始查），而第二个参数是每页的记录数（查多少条）
         Page<TabPurchase> postPage = new Page<>(pageQuery.getCurrentPage(), pageQuery.getLimit());
 
-        // page(postPage, wrapper)这里的第一个参数就是上面定义了的Page对象(分页信息)，第二个参数就是上面定义的条件构造器对象，通过调用这个方法就可以根据你的分页信息以及查询信息获取分页数据
+        // page(postPage, wrapper)这里的第一个参数就是上面定义了的Page对象(分页信息)，
+        // 第二个参数就是上面定义的条件构造器对象，通过调用这个方法就可以根据你的分页信息以及查询信息获取分页数据
         IPage<TabPurchase> postIPage = page(postPage, wrapper);
         //封装返回格式
         tabPurchaseBackPage.setContentList(postIPage.getRecords());
@@ -154,7 +155,7 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseMapper, TabPurchase
             if (purchase.getPurchaseStatus().equals("审核通过")){
                 QueryWrapper<TabApplication> wrapper=new QueryWrapper<>();
                 wrapper.eq("purchase_id",purchase.getPurchaseId());
-//                查询报名表是否已有信息，有则删除
+                       //查询报名表是否已有信息，有则删除
                 if(Objects.isNull(applicationMapper.selectOne(wrapper))) {
                     //想报名表插入数据
                     TabApplication application = new TabApplication();
@@ -167,6 +168,8 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseMapper, TabPurchase
                     String str = purchase.getPurchaseRegistrationDeadline().replaceAll("\\s*", "");
                     //设置开标时间
                     application.setPurchaseBidsTime(dateDiff.DateWeekend(str));
+                    //获取报名时间
+                    application.setApplicationTime(dateDiff.getNow());
                     applicationMapper.insert(application);
                 }
             }
@@ -175,6 +178,7 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseMapper, TabPurchase
             return Result.resultFactory(Status.JURISDICTION_FAIL);
         }
     }
+
 
     @Override
     public Result purchase_delete(TabPurchase purchase) {
