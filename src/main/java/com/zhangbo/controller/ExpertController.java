@@ -25,9 +25,9 @@ public class ExpertController {
     public Result expert_update(@RequestBody TabExpert expert) {
         return expertService.expert_update(expert);
     }
-//    @PreAuthorize("hasAnyAuthority('expert')")
-//    @GetMapping("info")
-//    public Result getInfo(){
-//        return expertService.getInfo();
-//    }
+    @PreAuthorize("hasAnyAuthority('expert')")
+    @GetMapping("info")
+    public Result getInfo(){
+        return expertService.getInfo();
+    }
 }
